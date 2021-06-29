@@ -464,24 +464,17 @@ if [ "$grepc" -eq 0 ]; then
     sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip_one:10m rate=4r/s;|g' /etc/nginx/nginx.conf
 
     #add limit_req zone 'global'
-    sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip_global:10m rate=10r/s;\n    limit_req zone=req_limit_per_ip_global;|g' /etc/nginx/nginx.conf
+    sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip_global:10m rate=10r/s;\n    limit_req zone=req_limit_per_ip_global burst=20;|g' /etc/nginx/nginx.conf
 
     rate_limit_zone_added=1
     echo "=== Added limit_req_zone to nginx.conf"
 
 fi
 
-#clone 'default' template as 'default-rate-limited-one'
+#download 'default-rate-limited-one' template
 if [ "$rate_limit_zone_added" -eq 1 ]; then
-    cp ${XPANEL}data/templates/web/nginx/default.stpl ${XPANEL}data/templates/web/nginx/default-rate-limited-one.stpl
-    cp ${XPANEL}data/templates/web/nginx/default.tpl ${XPANEL}data/templates/web/nginx/default-rate-limited-one.tpl
-    echo "=== Created 'default-rate-limited-one' template from 'default' template"
-fi
-
-#add 'limit_req' in location block for 'default-rate-limited-one' template
-if [ "$rate_limit_zone_added" -eq 1 ]; then
-    sed -i -e '/location \/ {/s/.*/location \/ {\n        limit_req zone=req_limit_per_ip_one;/' ${XPANEL}data/templates/web/nginx/default-rate-limited-one.stpl
-    sed -i -e '/location \/ {/s/.*/location \/ {\n        limit_req zone=req_limit_per_ip_one;/' ${XPANEL}data/templates/web/nginx/default-rate-limited-one.tpl
+    curl -o ${XPANEL}data/templates/web/nginx/default-rate-limited-one.stpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/default-rate-limited-one.stpl
+    curl -o ${XPANEL}data/templates/web/nginx/default-rate-limited-one.tpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/default-rate-limited-one.tpl
     echo "=== Added 'limit_req' to location block in 'default-rate-limited-one' template"
 fi
 
