@@ -12,7 +12,7 @@ server {
     include %home%/%user%/conf/web/%domain%/nginx.forcessl.conf*;
 
     location / {
-        limit_req zone=req_limit_per_ip_one burst=8 nodelay;
+        limit_req zone=req_limit_per_ip_one burst=10 nodelay;
         proxy_pass      http://%ip%:%web_port%;
     }
 
