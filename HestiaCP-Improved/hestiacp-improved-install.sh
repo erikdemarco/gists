@@ -461,7 +461,7 @@ if [ "$grepc" -eq 0 ]; then
     sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_log_level error;\n    limit_req_status 429;|g' /etc/nginx/nginx.conf
 
     #add limit_req zone 'one'
-    sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip_one:10m rate=4r/s;|g' /etc/nginx/nginx.conf
+    sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip_one:10m rate=5r/s;|g' /etc/nginx/nginx.conf
 
     #add limit_req zone 'global' (we shouldnt do this, because all static files will gets limited as well)
     #sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip_global:10m rate=10r/s;\n    limit_req zone=req_limit_per_ip_global burst=20;|g' /etc/nginx/nginx.conf
