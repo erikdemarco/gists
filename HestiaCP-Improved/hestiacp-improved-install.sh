@@ -473,8 +473,8 @@ fi
 
 #download 'default-rate-limited-one' template
 if [ "$rate_limit_zone_added" -eq 1 ]; then
-    curl -o ${XPANEL}data/templates/web/nginx/default-rate-limited-one.stpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/default-rate-limited-one.stpl
-    curl -o ${XPANEL}data/templates/web/nginx/default-rate-limited-one.tpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/default-rate-limited-one.tpl
+    curl -o ${XPANEL}data/templates/web/nginx/default-rate-limited-one.stpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/default-rate-limited-one.stpl
+    curl -o ${XPANEL}data/templates/web/nginx/default-rate-limited-one.tpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/default-rate-limited-one.tpl
     echo "=== Added 'limit_req' to location block in 'default-rate-limited-one' template"
 fi
 
