@@ -456,30 +456,37 @@ sudo systemctl restart mariadb
 rate_limit_zone_added=0
 grepc=$(grep -c 'limit_req_zone' /etc/nginx/nginx.conf)
 if [ "$grepc" -eq 0 ]; then
-    sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip:10m rate=4r/s;\n    limit_req_log_level error;\n    limit_req_status 429;|g' /etc/nginx/nginx.conf
+
+    #add limit_req settings
+    sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_log_level error;\n    limit_req_status 429;|g' /etc/nginx/nginx.conf
+
+    #add limit_req zone 'one'
+    sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip_one:10m rate=4r/s;|g' /etc/nginx/nginx.conf
+
+    #add limit_req zone 'global'
+    sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip_global:10m rate=10r/s;\n    limit_req zone=req_limit_per_ip_global;|g' /etc/nginx/nginx.conf
+
     rate_limit_zone_added=1
     echo "=== Added limit_req_zone to nginx.conf"
+
 fi
 
-#clone 'default' template with new name
+#clone 'default' template as 'default-rate-limited-one'
 if [ "$rate_limit_zone_added" -eq 1 ]; then
-    cp ${XPANEL}data/templates/web/nginx/default.stpl ${XPANEL}data/templates/web/nginx/default-rate-limited.stpl
-    cp ${XPANEL}data/templates/web/nginx/default.tpl ${XPANEL}data/templates/web/nginx/default-rate-limited.tpl
-    echo "=== Created 'default-rate-limited' template from 'default' template"
+    cp ${XPANEL}data/templates/web/nginx/default.stpl ${XPANEL}data/templates/web/nginx/default-rate-limited-one.stpl
+    cp ${XPANEL}data/templates/web/nginx/default.tpl ${XPANEL}data/templates/web/nginx/default-rate-limited-one.tpl
+    echo "=== Created 'default-rate-limited-one' template from 'default' template"
 fi
 
-#add 'limit_req' in location block
+#add 'limit_req' in location block for 'default-rate-limited-one' template
 if [ "$rate_limit_zone_added" -eq 1 ]; then
-    #sed -i -e '/location \/ {/s//location \/ {\n        limit_req zone=req_limit_per_ip;/' ${XPANEL}data/templates/web/nginx/default-rate-limited.stpl
-    #sed -i -e '/location \/ {/s//location \/ {\n        limit_req zone=req_limit_per_ip;/' ${XPANEL}data/templates/web/nginx/default-rate-limited.tpl
-    sed -i -e '/location \/ {/s/.*/location \/ {\n        limit_req zone=req_limit_per_ip;/' ${XPANEL}data/templates/web/nginx/default-rate-limited.stpl
-    sed -i -e '/location \/ {/s/.*/location \/ {\n        limit_req zone=req_limit_per_ip;/' ${XPANEL}data/templates/web/nginx/default-rate-limited.tpl
-    echo "=== Added 'limit_req' to location block in 'default-rate-limited' template"
+    sed -i -e '/location \/ {/s/.*/location \/ {\n        limit_req zone=req_limit_per_ip_one;/' ${XPANEL}data/templates/web/nginx/default-rate-limited-one.stpl
+    sed -i -e '/location \/ {/s/.*/location \/ {\n        limit_req zone=req_limit_per_ip_one;/' ${XPANEL}data/templates/web/nginx/default-rate-limited-one.tpl
+    echo "=== Added 'limit_req' to location block in 'default-rate-limited-one' template"
 fi
 
 #restart nginx
 sudo systemctl restart nginx
-
 
 
 #----------------------------------------------------------#
