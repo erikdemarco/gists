@@ -5,7 +5,7 @@
 # https://marekbosman.com/site/automatic-update-of-cloudflare-ip-addresses-in-nginx/
 
 # Location of the nginx config file that contains the CloudFlare IP addresses.
-CF_NGINX_CONFIG="/etc/nginx/cloudflare"
+CF_NGINX_CONFIG="/etc/nginx/cloudflare-ips.conf"
 
 # The URLs with the actual IP addresses used by CloudFlare.
 CF_URL_IP4="https://www.cloudflare.com/ips-v4"
