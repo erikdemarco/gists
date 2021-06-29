@@ -12,7 +12,7 @@ server {
     location / {
         proxy_pass      http://%ip%:%web_port%;
         
-        #add ratelimit only for php files
+        #add ratelimit only for php files (burst is 2x zone rate, if zone rate is 4/r/s then burst should be 8)
         location ~ .php$ {
             limit_req zone=req_limit_per_ip_one burst=8 nodelay;
             #proxy_pass      http://%ip%:%web_port%;
