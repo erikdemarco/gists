@@ -3,6 +3,8 @@
 # DO NOT MODIFY THIS FILE! CHANGES WILL BE LOST WHEN REBUILDING DOMAINS #
 #=======================================================================#
 
+# Modified from: https://github.com/hestiacp/hestiacp/blob/main/install/deb/templates/web/nginx/default.tpl
+
 server {
     listen      %ip%:%proxy_port%;
     server_name %domain_idn% %alias_idn%;
