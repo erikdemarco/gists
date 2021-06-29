@@ -470,8 +470,10 @@ fi
 
 #add 'limit_req' in location block
 if [ "$rate_limit_zone_added" -eq 1 ]; then
-    sed -i -e '/location \/ {/s//location \/ {\n        limit_req zone=req_limit_per_ip;/' ${XPANEL}data/templates/web/nginx/default-rate-limited.stpl
-    sed -i -e '/location \/ {/s//location \/ {\n        limit_req zone=req_limit_per_ip;/' ${XPANEL}data/templates/web/nginx/default-rate-limited.tpl
+    #sed -i -e '/location \/ {/s//location \/ {\n        limit_req zone=req_limit_per_ip;/' ${XPANEL}data/templates/web/nginx/default-rate-limited.stpl
+    #sed -i -e '/location \/ {/s//location \/ {\n        limit_req zone=req_limit_per_ip;/' ${XPANEL}data/templates/web/nginx/default-rate-limited.tpl
+    sed -i -e '/location \/ {/s/.*/location \/ {\n        limit_req zone=req_limit_per_ip;/' ${XPANEL}data/templates/web/nginx/default-rate-limited.stpl
+    sed -i -e '/location \/ {/s/.*/location \/ {\n        limit_req zone=req_limit_per_ip;/' ${XPANEL}data/templates/web/nginx/default-rate-limited.tpl
     echo "=== Added 'limit_req' to location block in 'default-rate-limited' template"
 fi
 
