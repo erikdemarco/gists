@@ -1,7 +1,6 @@
 #!/bin/bash
 
 
-
 #----------------------------------------------------------#
 #                  upgrade system                               #
 #----------------------------------------------------------#
@@ -105,7 +104,7 @@ vAddString="-r $vPort -s $vHostname -e $vEmail $vPassword"
 curl -O https://raw.githubusercontent.com/hestiacp/hestiacp/release/install/hst-install.sh
 
 #apache+nginx+phpfpm
-echo "Y" | bash hst-install.sh -a yes -w yes -o no -v no -j no -k no -m yes -g no -x no -z no -c no -t no -i yes -b yes -q no -d no -l en -y yes $vAddString -force
+echo "Y" | bash hst-install.sh -a yes -w yes -o no -v no -j no -k no -m yes -g no -x no -z no -c no -t no -i yes -b yes -q no -d no -l en -y no $vAddString -force
 
 
 
