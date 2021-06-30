@@ -52,10 +52,10 @@ check_result() {
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])  #get current server ram size (in K)
 vIPAddress=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 
-read -r -p "What e-mail address would you like to receive VestaCP alerts to? " vEmail
+read -r -p "What e-mail address would you like to receive alerts to? " vEmail
 read -r -p "Please type your server hostname, or press enter to use default: " vHostname
 read -r -p "Which port do you want the panel can be accessed from? or press enter to use default: " vPort
-read -r -p "Please type a password to use with VestaCP: " vPassword
+read -r -p "Please type a password to use or press enter to generate it automatically: " vPassword
 read -r -p "Please type timezone of your server (example: Asia/Jakarta) or press enter to use default: " vTimezone
 read -r -p "Do you want to add SSH Key? [y/N] 
 (if you don't have ssh key, you can generate it yourself using using tool like PuTTYgen) " vAddSsh
@@ -73,6 +73,13 @@ else
    vPort=$vPort
 fi
 
+if [ -z "$vPassword" ]
+then
+   vPassword=""
+else
+   vPassword="-p $vPassword"
+fi
+
 if [ $vAddSsh == "y" ] || [ $vAddSsh == "Y" ]; then
   read -r -p "Please input your public SSH Key: " vSshKey
 fi
@@ -85,7 +92,7 @@ if [ $vDropboxUploader == "y" ] || [ $vDropboxUploader == "Y" ]; then
 fi
 
 
-vAddString="-r $vPort -s $vHostname -e $vEmail -p $vPassword"
+vAddString="-r $vPort -s $vHostname -e $vEmail $vPassword"
 
 
 
