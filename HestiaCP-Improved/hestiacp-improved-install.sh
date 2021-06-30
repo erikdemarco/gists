@@ -287,8 +287,8 @@ else
 fi
 ' > /usr/local/bin/check-iptables-status.sh  #create 'check-iptables-status.sh' program
 chmod +x /usr/local/bin/check-iptables-status.sh    #make 'check-iptables-status.sh' executeable
-echo 'check program check-iptables-status with path /usr/local/bin/check-iptables-status.sh
-      if status != 1 then exec "${XPANEL}bin/v-update-firewall"' >> /etc/monit/conf.d/custom.conf  #add monit rule
+echo "check program check-iptables-status with path /usr/local/bin/check-iptables-status.sh
+      if status != 1 then exec '${XPANEL}bin/v-update-firewall'" >> /etc/monit/conf.d/custom.conf  #add monit rule
       
       
    
