@@ -474,15 +474,16 @@ if [ "$grepc" -eq 0 ]; then
     #sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip_global:10m rate=10r/s;\n    limit_req zone=req_limit_per_ip_global burst=20;|g' /etc/nginx/nginx.conf
 
     rate_limit_zone_added=1
-    echo "=== Added limit_req_zone to nginx.conf"
-
+    greentext "Added limit_req_zone to nginx.conf"
+else
+    redtext "Fail adding limit_req_zone to nginx.conf"
 fi
 
 #download 'default-rate-limited-one' template
 if [ "$rate_limit_zone_added" -eq 1 ]; then
     curl -o ${XPANEL}data/templates/web/nginx/default-rate-limited-one.stpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/default-rate-limited-one.stpl
     curl -o ${XPANEL}data/templates/web/nginx/default-rate-limited-one.tpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/default-rate-limited-one.tpl
-    echo "=== Added 'limit_req' to location block in 'default-rate-limited-one' template"
+    greentext "Added 'limit_req' to location block in 'default-rate-limited-one' template"
 fi
 
 #restart nginx
@@ -508,6 +509,8 @@ sed -i -e '/\/etc\/nginx\/conf.d\/\*.conf/i\    include /etc/nginx/cloudflare-ip
 
 # Add weekly cron to update 'cloudflare-ips.conf'
 ${XPANEL}bin/v-add-cron-job admin '0' '4' '*' '*' '0'  "sudo ${XPANEL}bin/cloudflare-update-ip-ranges.sh"
+
+greentext "Added script to autoupdate cloudflare ips"
 
 #restart nginx
 sudo systemctl restart nginx
