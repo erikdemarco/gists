@@ -531,6 +531,7 @@ sudo systemctl restart nginx
 # -) https://stackoverflow.com/a/26759734/15185328
 # -) ubuntu uses systemd-resolved as default dns resolver since v17 needs to watch if this changed in the future release https://askubuntu.com/a/1001295
 # -) https://askubuntu.com/a/973025
+# -) https://www.linuxbabe.com/ubuntu/set-up-local-dns-resolver-ubuntu-18-04-16-04-bind9
 # -) https://notes.enovision.net/linux/changing-dns-with-resolve
 # -) https://www.shells.com/l/en-US/tutorial/Install-a-local-DNS-resolver-on-Ubuntu-20-04
 # -) https://unix.stackexchange.com/a/527581
