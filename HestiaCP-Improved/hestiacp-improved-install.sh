@@ -104,7 +104,7 @@ vAddString="-r $vPort -s $vHostname -e $vEmail $vPassword"
 curl -O https://raw.githubusercontent.com/hestiacp/hestiacp/release/install/hst-install.sh
 
 #apache+nginx+phpfpm
-echo "Y" | bash hst-install.sh -a yes -w yes -o no -v no -j no -k no -m yes -g no -x no -z no -c no -t no -i yes -b yes -q no -d no -l en -y no $vAddString -force
+echo "Y" | bash hst-install.sh -a yes -w yes -o no -v no -j no -k yes -m yes -g no -x no -z no -c no -t no -i yes -b yes -q no -d no -l en -y no $vAddString -force
 
 
 
@@ -513,6 +513,68 @@ greentext "Added script to autoupdate cloudflare ips"
 
 #restart nginx
 sudo systemctl restart nginx
+
+#----------------------------------------------------------#
+#      		optimizing bind9   			   #
+#----------------------------------------------------------#
+
+# Notes:
+# -) This will make any domain which enabled dns, will resolve internally. Resulting much better performance when dealing with internal domain
+
+# Source:
+# -) https://stackoverflow.com/a/22592801/15185328
+# -) https://stackoverflow.com/a/26759734/15185328
+# -) ubuntu uses systemd-resolved as default dns resolver since v17 needs to watch if this changed in the future release https://askubuntu.com/a/1001295
+# -) https://askubuntu.com/a/973025
+# -) https://notes.enovision.net/linux/changing-dns-with-resolve
+# -) https://www.shells.com/l/en-US/tutorial/Install-a-local-DNS-resolver-on-Ubuntu-20-04
+# -) https://unix.stackexchange.com/a/527581
+ 
+# Check if named is installed
+if ! [ -x "$(command -v named)" ]; then
+    is_named_installed='no'
+else
+    is_named_installed='yes'
+fi
+
+
+# add localhost as first priority of dns resolver, bail if its already set
+grepc=$(grep -c '^DNS=' /etc/systemd/resolved.conf)
+if [ "$is_named_installed" == "yes" ] && [ "$grepc" -eq 0 ]; then
+    sed -i -e 's/^DNS=.*/#DNS=/' /etc/systemd/resolved.conf
+    echo 'DNS=127.0.0.1' >> /etc/systemd/resolved.conf
+    sudo systemctl restart systemd-resolved
+fi
+
+# make dns can only be accessed from localhost
+if [ "$is_named_installed" == "yes" ]; then
+
+    #add rule
+    sed  -i -e "/'53'/ s|0.0.0.0/0|127.0.0.1|" ${XPANEL}data/firewall/rules.conf
+
+    #update firewall then restart hestia
+    ${XPANEL}bin/v-update-firewall
+    service $xpanelname restart
+
+fi
+
+# Check if systemd-resolved (check resolvectl) is installed
+if ! [ -x "$(command -v resolvectl)" ]; then
+    is_resolvectl_installed='no'
+else
+    is_resolvectl_installed='yes'
+fi
+
+#check if we use localhost for dns
+if [ "$is_resolvectl_installed" == "yes" ]; then
+
+    grepc=$(resolvectl status | grep -c '127.0.0.1')
+    if [ "$grepc" -eq 0 ]; then
+        echo 'Not using localhost as DNS'
+	redtext "Not using localhost as DNS, All local domain will be resolved using external DNS resulting poor performance!"
+    fi
+
+fi
 
 
 #----------------------------------------------------------#
