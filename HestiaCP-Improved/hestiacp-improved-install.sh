@@ -543,8 +543,8 @@ if [ $vProtectAdminPanel == "y" ] || [ $vProtectAdminPanel == "Y" ]; then
     #sed -i -e '/3306/ s|0.0.0.0/0|127.0.0.1|' ${XPANEL}data/firewall/rules.conf
 
     #mysql (hestia)
-    echo "RULE='11' ACTION='ACCEPT' PROTOCOL='TCP' PORT='3306,5432' IP='127.0.0.1' COMMENT='DB' SUSPENDED='no' TIME='07:40:16' DATE='2014-05-25'" >> /usr/local/hestia/data/firewall/rules.conf
-
+    #echo "RULE='11' ACTION='ACCEPT' PROTOCOL='TCP' PORT='3306,5432' IP='127.0.0.1' COMMENT='DB' SUSPENDED='no' TIME='07:40:16' DATE='2014-05-25'" >> /usr/local/hestia/data/firewall/rules.conf
+    echo "RULE='11' ACTION='ACCEPT' PROTOCOL='TCP' PORT='3306,5432' IP='127.0.0.1' COMMENT='DB' SUSPENDED='no' TIME='07:40:16' DATE='2014-05-25'" >> ${XPANEL}data/firewall/rules.conf
 
     #update firewall then restart hestia
     ${XPANEL}bin/v-update-firewall
