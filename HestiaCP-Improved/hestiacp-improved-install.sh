@@ -521,6 +521,11 @@ sudo systemctl restart nginx
 # Notes:
 # -) This will make any domain which enabled dns, will resolve internally. Resulting much better performance when dealing with internal domain
 
+# Alternative:
+# -) editing '/etc/hosts' will fail. Because php/curl ignore this file
+# -) editing '/etc/dhcp/dhclient.conf' or '/etc/network/interfaces' will fail because hestiacp doenst use 'dhclient' nor 'ifup'
+# -) editing '/etc/systemd/resolved.conf' with ReadEtcHosts=yes also fail
+
 # Source:
 # -) https://stackoverflow.com/a/22592801/15185328
 # -) https://stackoverflow.com/a/26759734/15185328
