@@ -404,9 +404,12 @@ sudo systemctl restart apache2
 # http://mysql.rjweb.org/doc.php/ricksrots
 # https://haydenjames.io/mysql-server-has-gone-away-error-solutions/
 # https://mariadb.com/kb/en/mariadb-memory-allocation/
+# https://www.percona.com/blog/2016/10/12/mysql-5-7-performance-tuning-immediately-after-installation/
+# https://github.com/fillup/phpmyadmin-minimal/blob/master/libraries/advisory_rules.txt
 # set innodb_log_file_size to 20% of innodb_buffer_pool_size (becasue the default innodb_log_files_in_group=2 we need to divide by 2, so for the recomended 25%, we use 12%)
 # innodb_log_file_size max 256M Especially on a system with a lot of writes to InnoDB tables you should set innodb_log_file_size to 25% of innodb_buffer_pool_size. However the bigger this value, the longer the recovery time will be when database crashes, so this value should not be set much higher than 256 MiB. Please note however that you cannot simply change the value of this variable. You need to shutdown the server, remove the InnoDB log files, set the new value in my.cnf, start the server, then check the error logs if everything went fine. See also this blog entry 
 # If only using InnoDB, set innodb_buffer_pool_size to 70% of available RAM. (Plus key_buffer_size = 10M, small, but not zero.)
+# For innodb_buffer_pool_siz, start with 50% 70% of total RAM
 # If only using MyISAM, set key_buffer_size to 20% of available RAM. (Plus innodb_buffer_pool_size=0)
 # 
 # TODO: Set tmp_table_size and max_heap_table_size to about 1% of RAM. 
@@ -414,7 +417,7 @@ sudo systemctl restart apache2
 
 mysql_config_file='/etc/mysql/my.cnf'
 
-innodb_buffer_pool_size_value=$( calc 70/100*$memory )
+innodb_buffer_pool_size_value=$( calc 60/100*$memory )
 innodb_buffer_pool_size_value=$( round $innodb_buffer_pool_size_value )
 innodb_buffer_pool_size_value_text="${innodb_buffer_pool_size_value}K"
 
