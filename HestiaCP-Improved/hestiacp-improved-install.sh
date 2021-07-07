@@ -448,6 +448,13 @@ sed -i -e '/\[mysqld\]/a key_buffer_size = 10M' $mysql_config_file
 sed -i -e "/\[mysqld\]/a innodb_log_file_size = $innodb_log_file_size_value_text" $mysql_config_file
 sed -i -e "/\[mysqld\]/a innodb_log_files_in_group = $innodb_log_files_in_group_value" $mysql_config_file
 
+#reverting connections settings to default value (because all of the above optimization is based on default connection value, to prove use mysqlcalculator.com)
+# https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html
+sed -i -e '/max_user_connections/s/.*//' $mysql_config_file
+sed -i -e '/\[mysqld\]/a max_user_connections = 0' $mysql_config_file
+sed -i -e '/max_connections/s/.*//' $mysql_config_file
+sed -i -e '/\[mysqld\]/a max_connections = 151' $mysql_config_file
+
 #restart mariadb 
 sudo systemctl restart mariadb
 
