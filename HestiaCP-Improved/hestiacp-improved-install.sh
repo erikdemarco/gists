@@ -425,7 +425,7 @@ sudo systemctl restart mariadb
 greentext "Reset some settings to default value"
 
 #----------------------------------------------------------#
-#             optimize mysql (general settings)            #
+#        optimize mysql (calculate optimied settings)      #
 #----------------------------------------------------------#
 
 # http://mysql.rjweb.org/doc.php/ricksrots
@@ -488,7 +488,32 @@ sed -i -e '/\[mysqld\]/a max_user_connections = 0' $mysql_config_file
 #restart mariadb 
 sudo systemctl restart mariadb
 
-greentext "Optimized mysql general settings"
+greentext "Calculate and apply the most optimied mysql settings"
+
+
+
+
+
+
+#----------------------------------------------------------#
+#             optimize mysql (modify some settings)        #
+#----------------------------------------------------------#
+
+# CF will give 504 error if origin server not responding for 100seconds, so we follow it, we should wait for 100seconds
+# slow query is all query which processed more than 1 second
+# https://mariadb.com/docs/reference/mdb/system-variables/long_query_time/ 
+
+mysql_config_file='/etc/mysql/my.cnf'
+
+#timeout
+sed -i -e '/wait_timeout/s/.*/wait_timeout = 100/' $mysql_config_file
+sed -i -e '/interactive_timeout/s/.*/interactive_timeout = 100/' $mysql_config_file
+sed -i -e '/long_query_time/s/.*/long_query_time = 1/' $mysql_config_file
+
+#restart mariadb 
+sudo systemctl restart mariadb
+
+greentext "Modified some mysql settings"
 
 
 #----------------------------------------------------------#
@@ -561,7 +586,7 @@ export physical_memory=$(awk '/^MemTotal/ { printf("%.0f", $2*1024 ) }' < /proc/
 
 #free_memory (for safety we can use 80% of the free memory, 20% for other things)
 #rough calculation should be (2GB = max_connections 100) (4GB = max_connections 200)
-available_memory=$(echo "80 / 100 * $physical_memory" | bc -l)
+available_memory=$(echo "90 / 100 * $physical_memory" | bc -l)
 available_memory=$( round $available_memory )
 
 #calculate max_connections
