@@ -29,6 +29,11 @@ round() { echo $1 | awk '{print int($1+0.5)}'; }
 #to run calculation of a string
 calc() { awk "BEGIN { print "$*" }"; }
 
+#round down
+#https://stackoverflow.com/a/67727181/15185328
+#roundDownNearestHundred() { echo $1 | awk '{printf "%d00\n", $0 / 100}'; }
+#roundDownNearestTen() { echo $1 | awk '{printf "%d0\n", $0 / 10}'; }
+
 
 #----------------------------------------------------------#
 #                   settings                               #
