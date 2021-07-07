@@ -401,6 +401,28 @@ sudo apt-get install php${phpversion_short}-soap
 sudo systemctl restart apache2 
 
 
+#----------------------------------------------------------#
+#     optimize mysql (reset some settings to default)      #
+#----------------------------------------------------------#
+
+# reset some setting to default value, because its not too important to tune
+# watch 'max_allowed_packet' becasue mariadb default is 16M, but mysql default is 64M. if error happens, increase it to mysql default
+
+mysql_config_file='/etc/mysql/my.cnf'
+
+sed -i -e '/key_buffer_size/s/^/#/' $mysql_config_file
+sed -i -e '/max_allowed_packet/s/^/#/' $mysql_config_file
+sed -i -e '/table_open_cache/s/^/#/' $mysql_config_file
+sed -i -e '/sort_buffer_size/s/^/#/' $mysql_config_file
+sed -i -e '/net_buffer_length/s/^/#/' $mysql_config_file
+sed -i -e '/read_buffer_size/s/^/#/' $mysql_config_file
+sed -i -e '/read_rnd_buffer_size/s/^/#/' $mysql_config_file
+sed -i -e '/myisam_sort_buffer_size/s/^/#/' $mysql_config_file
+
+#restart mariadb 
+sudo systemctl restart mariadb
+
+greentext "Reset some settings to default value"
 
 #----------------------------------------------------------#
 #             optimize mysql (general settings)            #
