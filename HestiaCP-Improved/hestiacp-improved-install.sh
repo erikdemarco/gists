@@ -473,7 +473,7 @@ greentext "Optimized mysql general settings"
 #             optimize mysql (max_connections)             #
 #----------------------------------------------------------#
 
-# we can only calculate max_connections after we calculate other settings
+# we can only calculate max_connections after we modify all other settings
 # highly inspired from: https://github.com/BMDan/tuning-primer.sh/blob/master/tuning-primer.sh
 # https://lintechops.com/how-to-calculate-mysql-max_connections/
 
