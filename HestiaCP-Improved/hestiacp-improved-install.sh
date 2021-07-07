@@ -403,7 +403,7 @@ sudo systemctl restart apache2
 
 
 #----------------------------------------------------------#
-#                  optimize mysql                    	   #
+#             optimize mysql (general settings)            #
 #----------------------------------------------------------#
 
 # http://mysql.rjweb.org/doc.php/ricksrots
@@ -460,12 +460,102 @@ sed -i -e "/\[mysqld\]/a innodb_log_files_in_group = $innodb_log_files_in_group_
 # https://dev.mysql.com/doc/refman/5.7/en/server-system-variables.html
 sed -i -e '/max_user_connections/s/.*//' $mysql_config_file
 sed -i -e '/\[mysqld\]/a max_user_connections = 0' $mysql_config_file
-sed -i -e '/max_connections/s/.*//' $mysql_config_file
-sed -i -e '/\[mysqld\]/a max_connections = 151' $mysql_config_file
+#sed -i -e '/max_connections/s/.*//' $mysql_config_file
+#sed -i -e '/\[mysqld\]/a max_connections = 151' $mysql_config_file
 
 #restart mariadb 
 sudo systemctl restart mariadb
 
+greentext "Optimized mysql general settings"
+
+
+#----------------------------------------------------------#
+#             optimize mysql (max_connections)             #
+#----------------------------------------------------------#
+
+# we can only calculate max_connections after we calculate other settings
+# highly inspired from: https://github.com/BMDan/tuning-primer.sh/blob/master/tuning-primer.sh
+# https://lintechops.com/how-to-calculate-mysql-max_connections/
+
+mysql_config_file='/etc/mysql/my.cnf'
+
+mysql_variable () {
+  MYSQL_COMMAND="mysql"
+  local variable=$($MYSQL_COMMAND -Bse "show variables like $1" | awk '{ print $2 }')
+  export "$2"=$variable
+}
+
+#calculate global_buffers
+mysql_variable \'innodb_buffer_pool_size\' innodb_buffer_pool_size
+if [ -z $innodb_buffer_pool_size ] ; then
+innodb_buffer_pool_size=0
+fi
+mysql_variable \'innodb_additional_mem_pool_size\' innodb_additional_mem_pool_size
+if [ -z $innodb_additional_mem_pool_size ] ; then
+innodb_additional_mem_pool_size=0
+fi
+mysql_variable \'innodb_log_buffer_size\' innodb_log_buffer_size
+if [ -z $innodb_log_buffer_size ] ; then
+innodb_log_buffer_size=0
+fi
+mysql_variable \'key_buffer_size\' key_buffer_size
+mysql_variable \'query_cache_size\' query_cache_size
+if [ -z $query_cache_size ] ; then
+query_cache_size=0
+fi
+global_buffers=$(echo "$innodb_buffer_pool_size+$innodb_additional_mem_pool_size+$innodb_log_buffer_size+$key_buffer_size+$query_cache_size" | bc -l)
+
+#calculate thread_buffers (without max_connections)
+export major_version=$($MYSQL_COMMAND -Bse "SELECT SUBSTRING_INDEX(VERSION(), '.', +2)")
+mysql_variable \'read_buffer_size\' read_buffer_size
+mysql_variable \'read_rnd_buffer_size\' read_rnd_buffer_size
+mysql_variable \'sort_buffer_size\' sort_buffer_size
+mysql_variable \'thread_stack\' thread_stack
+#mysql_variable \'max_connections\' max_connections
+mysql_variable \'join_buffer_size\' join_buffer_size
+mysql_variable \'tmp_table_size\' tmp_table_size
+mysql_variable \'max_heap_table_size\' max_heap_table_size
+mysql_variable \'log_bin\' log_bin
+#mysql_status \'Max_used_connections\' max_used_connections
+if [ "$major_version" = "3.23" ] ; then
+        mysql_variable \'record_buffer\' read_buffer_size
+        mysql_variable \'record_rnd_buffer\' read_rnd_buffer_size
+        mysql_variable \'sort_buffer\' sort_buffer_size
+fi
+if [ "$log_bin" = "ON" ] ; then
+        mysql_variable \'binlog_cache_size\' binlog_cache_size
+else
+        binlog_cache_size=0
+fi
+if [ $max_heap_table_size -le $tmp_table_size ] ; then
+        effective_tmp_table_size=$max_heap_table_size
+else
+        effective_tmp_table_size=$tmp_table_size
+fi
+per_thread_buffers=$(echo "($read_buffer_size+$read_rnd_buffer_size+$sort_buffer_size+$thread_stack+$join_buffer_size+$binlog_cache_size)" | bc -l)
+
+#physical_memory
+export physical_memory=$(awk '/^MemTotal/ { printf("%.0f", $2*1024 ) }' < /proc/meminfo)
+
+#free_memory (for safety we can use 80% of the free memory, 20% for other things)
+#rough calculation should be (2GB = max_connections 100) (4GB = max_connections 200)
+available_memory=$(echo "80 / 100 * $physical_memory" | bc -l)
+available_memory=$( round $available_memory )
+
+#calculate max_connections
+max_connections=$(echo "($available_memory-$global_buffers)/$per_thread_buffers" | bc -l)
+max_connections=$( round $max_connections )
+
+#updating max_connections setting
+sed -i -e '/max_connections/s/.*//' $mysql_config_file
+sed -i -e "/\[mysqld\]/a max_connections = $max_connections" $mysql_config_file
+
+#restart mariadb 
+sudo systemctl restart mariadb
+
+if [ $max_connections > 0 ]; then
+  greentext "Optimized mysql max_connections"
+fi
 
 #----------------------------------------------------------#
 #      optimizing nginx (add rate-limited template)        #
