@@ -584,8 +584,9 @@ per_thread_buffers=$(echo "($read_buffer_size+$read_rnd_buffer_size+$sort_buffer
 #physical_memory
 export physical_memory=$(awk '/^MemTotal/ { printf("%.0f", $2*1024 ) }' < /proc/meminfo)
 
-#free_memory (for safety we can use 80% of the free memory, 20% for other things)
+
 #rough calculation should be (2GB = max_connections 100) (4GB = max_connections 200)
+# For calculation, its better not to set this to lower than 90% physical_memory. Because if its lower than 90%, sometimes the max_connection calculation is wrong, because not enough available memory for even 1 per_thread_buffers. If we use 100%, maybe its too high, much higher than rough calculation
 available_memory=$(echo "90 / 100 * $physical_memory" | bc -l)
 available_memory=$( round $available_memory )
 
@@ -600,8 +601,11 @@ sed -i -e "/\[mysqld\]/a max_connections = $max_connections" $mysql_config_file
 #restart mariadb 
 sudo systemctl restart mariadb
 
-if [ $max_connections > 0 ]; then
+#if its even lower than 'my-small.cnf', maybe the calculation is wrong 
+if [ $max_connections > 29 ]; then
   greentext "Optimized mysql max_connections"
+else
+  redtext "Maybe we failed to optimize mysql max_connections, please check max_connections value by comparing the value with rough calculation value"
 fi
 
 #----------------------------------------------------------#
