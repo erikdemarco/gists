@@ -34,6 +34,10 @@ calc() { awk "BEGIN { print "$*" }"; }
 #roundDownNearestHundred() { echo $1 | awk '{printf "%d00\n", $0 / 100}'; }
 #roundDownNearestTen() { echo $1 | awk '{printf "%d0\n", $0 / 10}'; }
 
+# Defining password-gen function (hestiacp)
+gen_pass() {
+    head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16
+}
 
 #----------------------------------------------------------#
 #                   settings                               #
@@ -79,7 +83,8 @@ fi
 
 if [ -z "$vPassword" ]
 then
-   vPassword=""
+   generatedpass=$(gen_pass)
+   vPassword="-p $generatedpass"
 else
    vPassword="-p $vPassword"
 fi
@@ -875,7 +880,7 @@ echo "Done!";
 echo " ";
 echo "You can access $xpanelname here: https://$vIPAddress:$vPort/";
 echo "Username: admin";
-echo "Password: $vpass";
+echo "Password: $vPassword";
 echo " ";
 echo " ";
 echo "PLEASE REBOOT THE SERVER ONCE YOU HAVE COPIED THE DETAILS ABOVE.";
