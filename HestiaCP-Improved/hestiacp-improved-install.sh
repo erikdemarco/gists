@@ -875,7 +875,7 @@ echo "Done!";
 echo " ";
 echo "You can access $xpanelname here: https://$vIPAddress:$vPort/";
 echo "Username: admin";
-echo "Password: $vPassword";
+echo "Password: $vpass";
 echo " ";
 echo " ";
 echo "PLEASE REBOOT THE SERVER ONCE YOU HAVE COPIED THE DETAILS ABOVE.";
