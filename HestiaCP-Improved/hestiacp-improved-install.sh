@@ -743,14 +743,16 @@ if [ "$is_resolvectl_installed" == "yes" ]; then
 fi
 
 # add monit 'named' config, note: the correct is '/var/run/named/named.pid' not '/var/run/named.pid' if not correct it will cause failed start
-echo 'check process named with pidfile /var/run/named/named.pid
-    start program = "/etc/init.d/named start"
-    stop program  = "/etc/init.d/named stop"
-    if failed port 53 type tcp protocol dns then restart
-    if failed port 53 type udp protocol dns then restart
-    if 5 restarts within 5 cycles then timeout' >> /etc/monit/conf.d/custom.conf
-sudo service monit restart
-sudo monit start all
+if [ "$is_named_installed" == "yes" ]; then
+	echo 'check process named with pidfile /var/run/named/named.pid
+	    start program = "/etc/init.d/named start"
+	    stop program  = "/etc/init.d/named stop"
+	    if failed port 53 type tcp protocol dns then restart
+	    if failed port 53 type udp protocol dns then restart
+	    if 5 restarts within 5 cycles then timeout' >> /etc/monit/conf.d/custom.conf
+	sudo service monit restart
+	sudo monit start all
+fi
 
 
 #----------------------------------------------------------#
