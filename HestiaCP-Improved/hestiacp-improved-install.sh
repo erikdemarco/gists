@@ -587,6 +587,7 @@ export physical_memory=$(awk '/^MemTotal/ { printf("%.0f", $2*1024 ) }' < /proc/
 
 #rough calculation should be (2GB = max_connections 100) (4GB = max_connections 200)
 # For calculation, its better not to set this to lower than 90% physical_memory. Because if its lower than 90%, sometimes the max_connection calculation is wrong, because not enough available memory for even 1 per_thread_buffers. If we use 100%, maybe its too high, much higher than rough calculation
+# we have tested it with 100% physical_memory, and load test it until max. Works without an issue. But still we recommend to keep it at 90% for the sweet spot
 available_memory=$(echo "90 / 100 * $physical_memory" | bc -l)
 available_memory=$( round $available_memory )
 
