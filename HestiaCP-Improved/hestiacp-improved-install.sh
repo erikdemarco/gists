@@ -227,6 +227,9 @@ sudo systemctl restart apache2
 #                   install Monit                          #
 #----------------------------------------------------------#
 
+# https://mmonit.com/monit/documentation/monit.html#CONFIGURATION-EXAMPLES
+# https://mmonit.com/wiki/Monit/ConfigurationExamples
+
 greentext "installing monit"
 
 sudo apt install monit
@@ -738,6 +741,15 @@ if [ "$is_resolvectl_installed" == "yes" ]; then
     fi
 
 fi
+
+# add monit 'named' config
+echo 'check process named with pidfile /var/run/named.pid
+    start program = "/etc/init.d/named start"
+    stop program  = "/etc/init.d/named stop"
+    if failed port 53 type tcp protocol dns then restart
+    if failed port 53 type udp protocol dns then restart' >> /etc/monit/conf.d/custom.conf
+sudo service monit restart
+sudo monit start all
 
 
 #----------------------------------------------------------#
