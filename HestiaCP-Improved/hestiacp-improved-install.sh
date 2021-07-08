@@ -84,9 +84,9 @@ fi
 if [ -z "$vPassword" ]
 then
    generatedpass=$(gen_pass)
-   vPassword="-p $generatedpass"
+   vPassword="$generatedpass"
 else
-   vPassword="-p $vPassword"
+   vPassword="$vPassword"
 fi
 
 if [ $vAddSsh == "y" ] || [ $vAddSsh == "Y" ]; then
@@ -101,7 +101,7 @@ if [ $vDropboxUploader == "y" ] || [ $vDropboxUploader == "Y" ]; then
 fi
 
 
-vAddString="-r $vPort -s $vHostname -e $vEmail $vPassword"
+vAddString="-r $vPort -s $vHostname -e $vEmail -p $vPassword"
 
 
 
