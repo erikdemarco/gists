@@ -675,7 +675,7 @@ greentext "Added script to autoupdate cloudflare ips"
 sudo systemctl restart nginx
 
 #----------------------------------------------------------#
-#      		optimizing bind9   			   #
+#      		optimizing named   			   #
 #----------------------------------------------------------#
 
 # Notes:
