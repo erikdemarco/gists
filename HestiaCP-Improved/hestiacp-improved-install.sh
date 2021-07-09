@@ -456,7 +456,14 @@ greentext "Reset some settings to default value"
 
 mysql_config_file='/etc/mysql/my.cnf'
 
-innodb_buffer_pool_size_value=$( calc 60/100*$memory )
+#innodb_buffer_pool_size_value percentage
+if [ $memory -lt 3900000 ]; then
+    innodb_buffer_pool_size_percentage=40
+else
+    innodb_buffer_pool_size_percentage=60
+fi
+
+innodb_buffer_pool_size_value=$( calc $innodb_buffer_pool_size_percentage/100*$memory )
 innodb_buffer_pool_size_value=$( round $innodb_buffer_pool_size_value )
 innodb_buffer_pool_size_value_text="${innodb_buffer_pool_size_value}K"
 
