@@ -470,16 +470,12 @@ innodb_log_file_size_value_text="${innodb_log_file_size_value}K"
     fi
 
 #remove line containing matched config
-sed -i -e '/query_cache_type/s/.*//' $mysql_config_file
-sed -i -e '/query_cache_size/s/.*//' $mysql_config_file
 sed -i -e '/innodb_buffer_pool_size/s/.*//' $mysql_config_file
 sed -i -e '/key_buffer_size/s/.*//' $mysql_config_file
 sed -i -e '/innodb_log_file_size/s/.*//' $mysql_config_file
 sed -i -e '/innodb_log_files_in_group/s/.*//' $mysql_config_file
 
 #add config after [mysqld]
-sed -i -e '/\[mysqld\]/a query_cache_type = 0' $mysql_config_file
-sed -i -e '/\[mysqld\]/a query_cache_size = 0' $mysql_config_file
 sed -i -e "/\[mysqld\]/a innodb_buffer_pool_size = $innodb_buffer_pool_size_value_text" $mysql_config_file
 #sed -i -e "/\[mysqld\]/a key_buffer_size = $key_buffer_size_value_text" $mysql_config_file
 sed -i -e '/\[mysqld\]/a key_buffer_size = 10M' $mysql_config_file
@@ -512,6 +508,10 @@ greentext "Calculate and apply the most optimied mysql settings"
 # https://mariadb.com/docs/reference/mdb/system-variables/long_query_time/ 
 
 mysql_config_file='/etc/mysql/my.cnf'
+
+#turn off cache, better to use object cache like redis
+sed -i -e '/query_cache_type/s/.*/query_cache_type = 0/' $mysql_config_file
+sed -i -e '/query_cache_size/s/.*/query_cache_size = 0/' $mysql_config_file
 
 #timeout
 sed -i -e '/wait_timeout/s/.*/wait_timeout = 100/' $mysql_config_file
