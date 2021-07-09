@@ -465,14 +465,23 @@ innodb_buffer_pool_size_value_text="${innodb_buffer_pool_size_value}K"
 #key_buffer_size_value=$( round $key_buffer_size_value )
 #key_buffer_size_value_text="${key_buffer_size_value}K"
 
-innodb_log_files_in_group_value=2
-innodb_log_file_size_value=$( calc 25/100*$innodb_buffer_pool_size_value )
-innodb_log_file_size_value=$( calc $innodb_log_file_size_value/$innodb_log_files_in_group_value )
+innodb_log_files_in_group_value=1
+all_innodb_log_file_size_value=$( calc 25/100*$innodb_buffer_pool_size_value )
+innodb_log_file_size_value=$( calc $all_innodb_log_file_size_value/$innodb_log_files_in_group_value )
 innodb_log_file_size_value=$( round $innodb_log_file_size_value )
 innodb_log_file_size_value_text="${innodb_log_file_size_value}K"
-    if [ $innodb_log_file_size_value -gt 256000 ]; then
-        innodb_log_file_size_value_text="256M"
+    #innodb_log_file_size_value recommended max value from phpmyadmin advisory (not relevan anymore)
+    #if [ $innodb_log_file_size_value -gt 256000 ]; then
+        #innodb_log_file_size_value_text="256M"
+    #fi
+    #innodb_log_file_size_value recommened max value is 128GB (remember its total value of innodb_log_file_size_value x innodb_log_files_in_group) https://mariadb.com/docs/reference/mdb/system-variables/innodb_log_file_size/
+    if [ $all_innodb_log_file_size_value -gt 512000000 ]; then
+        all_innodb_log_file_size_value=512000000
+        innodb_log_file_size_value=$( calc $all_innodb_log_file_size_value/$innodb_log_files_in_group_value )
+        innodb_log_file_size_value=$( round $innodb_log_file_size_value )
+        innodb_log_file_size_value_text="${innodb_log_file_size_value}K"
     fi
+    
 
 #remove line containing matched config
 sed -i -e '/innodb_buffer_pool_size/s/.*//' $mysql_config_file
