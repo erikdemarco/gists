@@ -471,14 +471,13 @@ innodb_log_file_size_value_text="${innodb_log_file_size_value}K"
 
 #remove line containing matched config
 sed -i -e '/innodb_buffer_pool_size/s/.*//' $mysql_config_file
-sed -i -e '/key_buffer_size/s/.*//' $mysql_config_file
+#sed -i -e '/key_buffer_size/s/.*//' $mysql_config_file
 sed -i -e '/innodb_log_file_size/s/.*//' $mysql_config_file
 sed -i -e '/innodb_log_files_in_group/s/.*//' $mysql_config_file
 
 #add config after [mysqld]
 sed -i -e "/\[mysqld\]/a innodb_buffer_pool_size = $innodb_buffer_pool_size_value_text" $mysql_config_file
 #sed -i -e "/\[mysqld\]/a key_buffer_size = $key_buffer_size_value_text" $mysql_config_file
-sed -i -e '/\[mysqld\]/a key_buffer_size = 10M' $mysql_config_file
 sed -i -e "/\[mysqld\]/a innodb_log_file_size = $innodb_log_file_size_value_text" $mysql_config_file
 sed -i -e "/\[mysqld\]/a innodb_log_files_in_group = $innodb_log_files_in_group_value" $mysql_config_file
 
