@@ -433,8 +433,11 @@ sudo systemctl restart mariadb
 greentext "Reset some settings to default value"
 
 #----------------------------------------------------------#
-#        optimize mysql (calculate optimied settings)      #
+#        optimize mysql (automatic configuration)      	   #
 #----------------------------------------------------------#
+
+# This automatic configuration modified from https://dev.mysql.com/doc/refman/8.0/en/innodb-dedicated-server.html
+
 
 # http://mysql.rjweb.org/doc.php/ricksrots
 # https://haydenjames.io/mysql-server-has-gone-away-error-solutions/
