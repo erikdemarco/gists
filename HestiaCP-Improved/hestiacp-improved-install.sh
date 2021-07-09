@@ -437,7 +437,7 @@ greentext "Reset some settings to default value"
 #----------------------------------------------------------#
 
 # This automatic configuration modified from https://dev.mysql.com/doc/refman/8.0/en/innodb-dedicated-server.html
-
+# innodb_log_files_in_group=1, Its defaulted to 1 and removed in MariaDB 10.6.0. We had some ideas to move to an append-only file and to partition the log into multiple files, but it turned out that a single fixed-size circular log file would perform best in typical scenarios.
 
 # http://mysql.rjweb.org/doc.php/ricksrots
 # https://haydenjames.io/mysql-server-has-gone-away-error-solutions/
