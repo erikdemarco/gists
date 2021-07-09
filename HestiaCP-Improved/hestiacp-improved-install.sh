@@ -438,6 +438,11 @@ greentext "Reset some settings to default value"
 
 # This automatic configuration modified from https://dev.mysql.com/doc/refman/8.0/en/innodb-dedicated-server.html
 # innodb_log_files_in_group=1, Its defaulted to 1 and removed in MariaDB 10.6.0. We had some ideas to move to an append-only file and to partition the log into multiple files, but it turned out that a single fixed-size circular log file would perform best in typical scenarios.
+# for innodb_flush_method better to use default value, so we not set any configuration for it https://mariadb.com/docs/reference/mdb/system-variables/innodb_flush_method/
+# For innodb_buffer_pool_size, start with 50% 70% of total RAM
+# innodb_log_file_size max 256M Especially on a system with a lot of writes to InnoDB tables you should set innodb_log_file_size to 25% of innodb_buffer_pool_size. However the bigger this value, the longer the recovery time will be when database crashes, so this value should not be set much higher than 256 MiB. Please note however that you cannot simply change the value of this variable. You need to shutdown the server, remove the InnoDB log files, set the new value in my.cnf, start the server, then check the error logs if everything went fine. See also this blog entry 
+# If only using InnoDB, set innodb_buffer_pool_size to 70% of available RAM. (Plus key_buffer_size = 10M, small, but not zero.) Note: 70% is too much, we need to consider other app
+# If only using MyISAM, set key_buffer_size to 20% of available RAM. (Plus innodb_buffer_pool_size=0)
 
 # http://mysql.rjweb.org/doc.php/ricksrots
 # https://haydenjames.io/mysql-server-has-gone-away-error-solutions/
@@ -447,12 +452,6 @@ greentext "Reset some settings to default value"
 # https://github.com/major/MySQLTuner-perl/blob/656a7e51ed0c758131bca6ce6d73cb4201dce143/mysqltuner.pl
 # https://github.com/phpmyadmin/phpmyadmin/blob/a96044476aae45fafd645fca8a042d2a42c7a897/libraries/advisory_rules_generic.php
 # set innodb_log_file_size to 20% of innodb_buffer_pool_size (becasue the default innodb_log_files_in_group=2 we need to divide by 2, so for the recomended 25%, we use 12%)
-# innodb_log_file_size max 256M Especially on a system with a lot of writes to InnoDB tables you should set innodb_log_file_size to 25% of innodb_buffer_pool_size. However the bigger this value, the longer the recovery time will be when database crashes, so this value should not be set much higher than 256 MiB. Please note however that you cannot simply change the value of this variable. You need to shutdown the server, remove the InnoDB log files, set the new value in my.cnf, start the server, then check the error logs if everything went fine. See also this blog entry 
-# If only using InnoDB, set innodb_buffer_pool_size to 70% of available RAM. (Plus key_buffer_size = 10M, small, but not zero.) Note: 70% is too much, we need to consider other app
-# If only using MyISAM, set key_buffer_size to 20% of available RAM. (Plus innodb_buffer_pool_size=0)
-# For innodb_buffer_pool_size, start with 50% 70% of total RAM
-# 
-# TODO: Set tmp_table_size and max_heap_table_size to about 1% of RAM. 
 
 
 mysql_config_file='/etc/mysql/my.cnf'
