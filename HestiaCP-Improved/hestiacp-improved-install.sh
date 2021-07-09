@@ -550,6 +550,7 @@ greentext "Modified some mysql settings"
 # we can only calculate max_connections after we modify all other settings
 # highly inspired from: https://github.com/BMDan/tuning-primer.sh/blob/master/tuning-primer.sh
 # https://lintechops.com/how-to-calculate-mysql-max_connections/
+# Systems with 16G RAM or higher max_connections=1000 is a good idea. https://www.percona.com/blog/2013/11/28/mysql-error-too-many-connections/
 
 mysql_config_file='/etc/mysql/my.cnf'
 
@@ -611,15 +612,12 @@ per_thread_buffers=$(echo "($read_buffer_size+$read_rnd_buffer_size+$sort_buffer
 #physical_memory
 export physical_memory=$(awk '/^MemTotal/ { printf("%.0f", $2*1024 ) }' < /proc/meminfo)
 
-
 #rough calculation should be (2GB = max_connections 100) (4GB = max_connections 200)
 # For calculation, its better not to set this to lower than 90% physical_memory. Because if its lower than 90%, sometimes the max_connection calculation is wrong, because not enough available memory for even 1 per_thread_buffers. If we use 100%, maybe its too high, much higher than rough calculation
 # we have tested it with 100% physical_memory, and load test it until max. Works without an issue. But still we recommend to keep it at 90% for the sweet spot
-available_memory=$(echo "90 / 100 * $physical_memory" | bc -l)
-available_memory=$( round $available_memory )
-
-#calculate max_connections
-max_connections=$(echo "($available_memory-$global_buffers)/$per_thread_buffers" | bc -l)
+#calculate max_connections (50-70% of real max_connections is recommended so we not use too much memory. especially server with shared system)
+max_connections=$(echo "($physical_memory-$global_buffers)/$per_thread_buffers" | bc -l)
+max_connections=$(echo "50 / 100 * $max_connections" | bc -l)
 max_connections=$( round $max_connections )
 
 #updating max_connections setting
