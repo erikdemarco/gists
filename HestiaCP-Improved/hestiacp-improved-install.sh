@@ -444,6 +444,8 @@ greentext "Reset some settings to default value"
 # https://mariadb.com/kb/en/mariadb-memory-allocation/
 # https://www.percona.com/blog/2016/10/12/mysql-5-7-performance-tuning-immediately-after-installation/
 # https://github.com/fillup/phpmyadmin-minimal/blob/master/libraries/advisory_rules.txt
+# https://github.com/major/MySQLTuner-perl/blob/656a7e51ed0c758131bca6ce6d73cb4201dce143/mysqltuner.pl
+# https://github.com/phpmyadmin/phpmyadmin/blob/a96044476aae45fafd645fca8a042d2a42c7a897/libraries/advisory_rules_generic.php
 # set innodb_log_file_size to 20% of innodb_buffer_pool_size (becasue the default innodb_log_files_in_group=2 we need to divide by 2, so for the recomended 25%, we use 12%)
 # innodb_log_file_size max 256M Especially on a system with a lot of writes to InnoDB tables you should set innodb_log_file_size to 25% of innodb_buffer_pool_size. However the bigger this value, the longer the recovery time will be when database crashes, so this value should not be set much higher than 256 MiB. Please note however that you cannot simply change the value of this variable. You need to shutdown the server, remove the InnoDB log files, set the new value in my.cnf, start the server, then check the error logs if everything went fine. See also this blog entry 
 # If only using InnoDB, set innodb_buffer_pool_size to 70% of available RAM. (Plus key_buffer_size = 10M, small, but not zero.) Note: 70% is too much, we need to consider other app
