@@ -532,7 +532,7 @@ mysql_config_file='/etc/mysql/my.cnf'
 sed -i -e '/query_cache_type/s/.*/query_cache_type = 0/' $mysql_config_file
 sed -i -e '/query_cache_size/s/.*/query_cache_size = 0/' $mysql_config_file
 
-#timeout
+#timeout, should we set wait_timeout to 30? because php timelimit is 30
 sed -i -e '/wait_timeout/s/.*/wait_timeout = 100/' $mysql_config_file
 sed -i -e '/interactive_timeout/s/.*/interactive_timeout = 100/' $mysql_config_file
 sed -i -e '/long_query_time/s/.*/long_query_time = 1/' $mysql_config_file
