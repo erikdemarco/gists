@@ -113,7 +113,7 @@ sudo ufw --force enable
 ' > /usr/local/bin/monit-iptables-start.sh  #create 'monit-iptables-start.sh' program
 chmod +x /usr/local/bin/monit-iptables-start.sh    #make 'monit-iptables-start.sh' executeable
 
-echo "check program monit-iptables-start with path /usr/local/bin/monit-iptables-start.sh
+echo "check program monit-iptables-check with path /usr/local/bin/monit-iptables-check.sh
       if status != 1 then exec '/usr/local/bin/monit-iptables-start.sh'" >> /etc/monit/conf.d/custom.conf  #add monit rule
 
 
