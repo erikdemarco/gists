@@ -71,10 +71,10 @@ sudo ufw allow from $vAccessIP to any port 6379
 sudo ufw allow 22
 
 #enable ufw
-sudo ufw enable
+sudo ufw --force enable
 
 #fix bug 'ufw does not start automatically at boot' see comment #23 here: https://bugs.launchpad.net/ubuntu/+source/ufw/+bug/1726856?comments=all
-echo '@reboot root ufw enable' >> /etc/crontab
+echo '@reboot root ufw --force enable' >> /etc/crontab
     
 #----------------------------------------------------------#
 #                   install Monit                          #
