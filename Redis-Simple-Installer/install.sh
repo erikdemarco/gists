@@ -39,8 +39,8 @@ read -r -p "Enter IP address which will access this redis server:" vAccessIP
 sudo apt install -y redis-server
 
 #redis config: bind to 0.0.0.0 so redis can listen outside connection
-#sed "s@^# bind 127.0.0.1@bind 0.0.0.0@" /etc/redis/redis.conf #https://wiki.linuxchina.net/index.php/Redis_install_-How_To_Install_and_Use_Redis
-sed -i -e 's/^# bind 127.0.0.1.*/bind 0.0.0.0/' /etc/redis/redis.conf
+#sed "s@^bind 127.0.0.1@bind 0.0.0.0@" /etc/redis/redis.conf #https://wiki.linuxchina.net/index.php/Redis_install_-How_To_Install_and_Use_Redis
+sed -i -e 's/^bind 127.0.0.1.*/bind 0.0.0.0/' /etc/redis/redis.conf
 
 #redis config: maxmemory-policy using lfu: https://redis.io/topics/lru-cache
 sed -i -e "/bind 0.0.0.0/a maxmemory-policy allkeys-lfu" /etc/redis/redis.conf
