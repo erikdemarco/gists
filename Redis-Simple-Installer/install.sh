@@ -173,3 +173,13 @@ if [ $vAddSsh == "y" ] || [ $vAddSsh == "Y" ]; then
     check_result $? 'reloading sshd'
 
 fi
+
+#----------------------------------------------------------#
+#                	  Reboot                           #
+#----------------------------------------------------------#
+
+
+read -r -p "Do you want to reboot now? [y/N] " vReboot
+if [ $vReboot == "y" ] || [ $vReboot == "Y" ]; then
+  reboot
+fi
