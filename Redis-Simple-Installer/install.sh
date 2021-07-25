@@ -99,7 +99,7 @@ echo 'check process redis with pidfile  /var/run/redis/redis-server.pid
 
 #iptables (checking logic inspired from https://github.com/hestiacp/hestiacp/blob/f5e82b73bede8e640287c490095f777a6e1754cb/bin/v-list-sys-services)
 echo '#!/bin/sh
-if $(iptables -S INPUT | grep -qx '\-P INPUT DROP');
+if $(iptables -S INPUT | grep -qx "\-P INPUT DROP");
 then
     exit 1 #running
 else
