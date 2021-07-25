@@ -29,6 +29,8 @@ calc() { awk "BEGIN { print "$*" }"; }
 
 physical_memory_mb=$(awk '/^MemTotal/ { printf("%.0f", $2/1024 ) }' < /proc/meminfo)
 
+read -r -p "Enter IP address which will access this redis server:" vAccessIP
+
 #----------------------------------------------------------#
 #                   Install redis-server                   #
 #----------------------------------------------------------#
@@ -54,7 +56,24 @@ sed -i -e "/bind 0.0.0.0/a maxmemory $redis_max_memory_value_text" /etc/redis/re
 #restart redis
 sudo systemctl restart redis-server
 
+#----------------------------------------------------------#
+#                   Enable UFW                  	   #
+#----------------------------------------------------------#
 
+#allow redis access from single ip
+#sudo ufw allow proto tcp from $vAccessIP/32 to any port 6379 
+sudo ufw allow from $vAccessIP to any port 6379
+
+#allow ssh access from anywhere (so we can manage it from everywhere)
+#sudo ufw allow “OpenSSH”
+sudo ufw allow 22
+
+#enable ufw
+sudo ufw enable
+
+#fix bug 'ufw does not start automatically at boot' see comment #23 here: https://bugs.launchpad.net/ubuntu/+source/ufw/+bug/1726856?comments=all
+echo '@reboot root ufw enable' >> /etc/crontab
+    
 #----------------------------------------------------------#
 #                   install Monit                          #
 #----------------------------------------------------------#
