@@ -31,6 +31,13 @@ physical_memory_mb=$(awk '/^MemTotal/ { printf("%.0f", $2/1024 ) }' < /proc/memi
 
 read -r -p "Enter IP address which will access this redis server:" vAccessIP
 
+#ssh key
+read -r -p "Do you want to add SSH Key? [y/N] 
+(if you don't have ssh key, you can generate it yourself using using tool like PuTTYgen) " vAddSsh
+if [ $vAddSsh == "y" ] || [ $vAddSsh == "Y" ]; then
+  read -r -p "Please input your public SSH Key: " vSshKey
+fi
+
 #----------------------------------------------------------#
 #                   Install redis-server                   #
 #----------------------------------------------------------#
@@ -116,8 +123,42 @@ chmod +x /usr/local/bin/monit-iptables-start.sh    #make 'monit-iptables-start.s
 echo "check program monit-iptables-check with path /usr/local/bin/monit-iptables-check.sh
       if status != 1 then exec '/usr/local/bin/monit-iptables-start.sh'" >> /etc/monit/conf.d/custom.conf  #add monit rule
 
-
-
 #restart monit
 sudo service monit restart
 sudo monit start all
+
+
+
+#----------------------------------------------------------#
+#                  add SSH KEY                             #
+#----------------------------------------------------------#
+
+
+
+if [ $vAddSsh == "y" ] || [ $vAddSsh == "Y" ]; then
+
+    greentext "adding ssh key"
+
+    #create the ~/.ssh directory if it does not already exist (it safe beacuse of -p)
+    mkdir -p ~/.ssh
+
+    #add your public key (vps_4096 file)
+    echo $vSshKey >> ~/.ssh/authorized_keys
+
+    #make sure permission and ownership correct
+    chmod -R go= ~/.ssh
+    chown -R $USER:$USER ~/.ssh
+
+    #hardening ssh https://www.techrepublic.com/article/5-quick-ssh-hardening-tips/
+    #TODO 2FA using google authenticator: https://medium.com/@jasonrigden/hardening-ssh-1bcb99cd4cef
+    sed -i -e '/PermitRootLogin/s/.*/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
+    sed -i -e '/PermitEmptyPasswords/s/.*/PermitEmptyPasswords no/' /etc/ssh/sshd_config
+    sed -i -e '/MaxAuthTries/s/.*/MaxAuthTries 3/' /etc/ssh/sshd_config
+    sed -i -e '/X11Forwarding/s/.*/X11Forwarding no/' /etc/ssh/sshd_config
+    sed -i -e '/ClientAliveInterval/s/.*/ClientAliveInterval 300/' /etc/ssh/sshd_config
+
+    #reload ssh
+    systemctl reload sshd.service
+    check_result $? 'reloading sshd'
+
+fi
