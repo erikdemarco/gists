@@ -399,6 +399,11 @@ for pconf in $(find /etc/php* -name php.ini); do
     echo "zend_extension=/usr/local/ioncube/ioncube_loader_lin_${phpversion_short}.so" >> $pconf
 done
 
+# php-redis
+# https://www.prowebtips.com/install-redis-and-php-redis-extension-on-ubuntu/
+sudo apt install -y php-redis
+sudo apt install -y "php${phpversion_short}-redis"
+
 
 #php soap
 sudo apt-get install php${phpversion_short}-soap
