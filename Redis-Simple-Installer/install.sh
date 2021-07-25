@@ -60,6 +60,8 @@ sudo systemctl restart redis-server
 #                   Enable UFW                  	   #
 #----------------------------------------------------------#
 
+# https://www.digitalocean.com/community/tutorials/ufw-essentials-common-firewall-rules-and-commands
+
 #allow redis access from single ip
 #sudo ufw allow proto tcp from $vAccessIP/32 to any port 6379 
 sudo ufw allow from $vAccessIP to any port 6379
