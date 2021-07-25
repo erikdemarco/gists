@@ -95,7 +95,28 @@ echo 'check process redis with pidfile  /var/run/redis/redis-server.pid
     if failed port 6379 protocol redis then restart
     if 5 restarts within 5 cycles then timeout' >> /etc/monit/conf.d/custom.conf
 
-#ufw/iptables isn't a service so we cant use monit to monitor this
+#ufw/iptables isn't a service so we cant use monit to monitor this (we have a hack for this, see below)
+
+#iptables (checking logic inspired from https://github.com/hestiacp/hestiacp/blob/f5e82b73bede8e640287c490095f777a6e1754cb/bin/v-list-sys-services)
+echo '#!/bin/sh
+if $(iptables -S INPUT | grep -qx '\-P INPUT DROP');
+then
+    exit 1 #running
+else
+    exit 2 #not running
+fi
+' > /usr/local/bin/monit-iptables-check.sh  #create 'monit-iptables-check.sh' program
+chmod +x /usr/local/bin/monit-iptables-check.sh    #make 'monit-iptables-check.sh' executeable
+
+echo '#!/bin/sh
+sudo ufw --force enable
+' > /usr/local/bin/monit-iptables-start.sh  #create 'monit-iptables-start.sh' program
+chmod +x /usr/local/bin/monit-iptables-start.sh    #make 'monit-iptables-start.sh' executeable
+
+echo "check program monit-iptables-start with path /usr/local/bin/monit-iptables-start.sh
+      if status != 1 then exec '/usr/local/bin/monit-iptables-start.sh'" >> /etc/monit/conf.d/custom.conf  #add monit rule
+
+
 
 #restart monit
 sudo service monit restart
