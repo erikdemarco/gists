@@ -23,6 +23,17 @@ round() { echo $1 | awk '{print int($1+0.5)}'; }
 #to run calculation of a string
 calc() { awk "BEGIN { print "$*" }"; }
 
+# Defining return code check function
+check_result() {
+    if [ $1 -ne 0 ]
+    then
+	redtext "Error: $2"
+        exit $1
+    else
+    	greentext "Finished: $2"
+    fi
+}
+
 #----------------------------------------------------------#
 #                   settings                               #
 #----------------------------------------------------------#
