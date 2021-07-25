@@ -53,3 +53,27 @@ sed -i -e "/bind 0.0.0.0/a maxmemory $redis_max_memory_value_text" /etc/redis/re
 
 #restart redis
 sudo systemctl restart redis-server
+
+
+#----------------------------------------------------------#
+#                   install Monit                          #
+#----------------------------------------------------------#
+
+greentext "installing monit"
+
+sudo apt install monit
+
+#allow only localhost to access monit
+echo 'set httpd port 2812
+	allow localhost' >> /etc/monit/conf.d/custom.conf
+
+#redis
+echo 'check process redis with pidfile  /var/run/redis/redis-server.pid
+    start program = "/bin/systemctl start redis-server"
+    stop program = "/bin/systemctl stop redis-server"
+    if failed port 6379 protocol redis then restart
+    if 5 restarts within 5 cycles then timeout' >> /etc/monit/conf.d/custom.conf
+
+#restart monit
+sudo service monit restart
+sudo monit start all
