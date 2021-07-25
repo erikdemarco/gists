@@ -74,6 +74,8 @@ echo 'check process redis with pidfile  /var/run/redis/redis-server.pid
     if failed port 6379 protocol redis then restart
     if 5 restarts within 5 cycles then timeout' >> /etc/monit/conf.d/custom.conf
 
+#ufw/iptables isn't a service so we cant use monit to monitor this
+
 #restart monit
 sudo service monit restart
 sudo monit start all
