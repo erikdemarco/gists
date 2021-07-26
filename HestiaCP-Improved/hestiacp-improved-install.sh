@@ -152,11 +152,11 @@ fi
 
 #change default page template for hostname
 echo -n > /home/admin/web/$servername/public_html/index.html
-echo -n > /home/admin/web/$servername/public_shtml/index.html
+#echo -n > /home/admin/web/$servername/public_shtml/index.html		#doenst exist anymore in new hestiacp
 
 #change default page template for future use
 echo -n > ${XPANEL}data/templates/web/skel/public_html/index.html
-echo -n > ${XPANEL}data/templates/web/skel/public_shtml/index.html
+#echo -n > ${XPANEL}data/templates/web/skel/public_shtml/index.html	#doenst exist anymore in new hestiacp
 
 
 
