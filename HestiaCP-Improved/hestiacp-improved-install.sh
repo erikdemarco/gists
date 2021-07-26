@@ -401,7 +401,7 @@ done
 
 # php-redis
 # https://www.prowebtips.com/install-redis-and-php-redis-extension-on-ubuntu/
-#sudo apt install -y php-redis	#is this needed?
+sudo apt install -y php-redis	#is this needed?
 sudo apt install -y "php${phpversion_short}-redis"
 
 
