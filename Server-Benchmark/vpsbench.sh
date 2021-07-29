@@ -6,6 +6,11 @@
 # Modified & fixed by erikdemarco
 #==============================================================================
 
+# RAM speed
+# http://www.noah.org/wiki/Benchmarks
+# https://serverfault.com/questions/414665/using-dd-command-to-test-performance-on-different-partitions
+# https://www.programmersought.com/article/82143397428/
+# https://starbeamrainbowlabs.com/blog/article.php?article=posts%2F412-which-is-faster.html
 
 # Quick benchmark, always run
 function bench_quick {
@@ -24,9 +29,9 @@ function bench_quick {
     local io=$( ( dd if=/dev/zero of=$test_file bs=64k count=16k conv=fdatasync; rm -f $test_file ) 2>&1 | awk -F, '{io=$NF} END { print io}' )
     echo OK
 
-    echo -n "Benching Memory I/O ... "
+    echo -n "Benching RAM I/O ... "
     local memory_test_file="/dev/shm/${test_file}"
-    local mio=$( ( dd if=/dev/zero of=$memory_test_file bs=64k count=16k conv=fdatasync; rm -f $memory_test_file ) 2>&1 | awk -F, '{io=$NF} END { print io}' )
+    local rio=$( ( dd if=/dev/zero of=$memory_test_file bs=64k count=16k conv=fdatasync; rm -f $memory_test_file ) 2>&1 | awk -F, '{io=$NF} END { print io}' )
     echo OK
 
     echo -n "Benching CPU. Bzipping 25MB file ... "
@@ -52,7 +57,7 @@ Total amount of RAM: $tram MB
 Total amount of swap: $swap MB
 System uptime: $up
 Disk I/O speed: $io
-Memory I/O speed: $mio
+RAM I/O speed: $rio
 Bzip 25MB: $tf
 Download 100MB file: $dl
 \`\`\`
