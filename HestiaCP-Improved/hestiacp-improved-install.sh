@@ -65,6 +65,9 @@ read -r -p "Please type your server hostname, or press enter to use default: " v
 read -r -p "Which port do you want the panel can be accessed from? or press enter to use default: " vPort
 read -r -p "Please type a password to use or press enter to generate it automatically: " vPassword
 read -r -p "Please type timezone of your server (example: Asia/Jakarta) or press enter to use default: " vTimezone
+
+read -r -p "Do you want to add local redis-server? [y/N] " vAddRedis
+
 read -r -p "Do you want to add SSH Key? [y/N] 
 (if you don't have ssh key, you can generate it yourself using using tool like PuTTYgen) " vAddSsh
 
