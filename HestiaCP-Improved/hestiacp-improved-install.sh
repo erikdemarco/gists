@@ -152,6 +152,7 @@ export HESTIA=/usr/local/hestia/
 # https://docs.digitalocean.com/products/databases/redis/resources/memory-usage/
 # https://pantheon.io/docs/object-cache
 # https://docs.digitalocean.com/products/databases/redis/resources/memory-usage/
+# https://gridpane.com/kb/configure-redis/
 if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
   memory_allocated_for_redis_server_kb=$( calc 10/100*$memory )
   memory_allocated_for_redis_server_kb=$( calc 60/100*$memory_allocated_for_redis_server_kb )
