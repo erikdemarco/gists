@@ -56,17 +56,14 @@ check_result() {
 }
 
 
-#get info
-memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])  #get current server ram size (in K)
-vIPAddress=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
-
 read -r -p "What e-mail address would you like to receive alerts to? " vEmail
 read -r -p "Please type your server hostname, or press enter to use default: " vHostname
 read -r -p "Which port do you want the panel can be accessed from? or press enter to use default: " vPort
 read -r -p "Please type a password to use or press enter to generate it automatically: " vPassword
 read -r -p "Please type timezone of your server (example: Asia/Jakarta) or press enter to use default: " vTimezone
 
-read -r -p "Do you want to add local redis-server? [y/N] " vAddRedis
+#additional app
+read -r -p "Do you want to add local redis-server? [y/N] " vAddRedisServer
 
 read -r -p "Do you want to add SSH Key? [y/N] 
 (if you don't have ssh key, you can generate it yourself using using tool like PuTTYgen) " vAddSsh
@@ -124,6 +121,11 @@ echo "Y" | bash hst-install.sh -a yes -w yes -o no -v no -j no -k yes -m yes -g 
 #----------------------------------------------------------#
 #                   needed variable                        #
 #----------------------------------------------------------#
+
+#get info
+memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])  #get current server ram size (in K)
+available_memory
+vIPAddress=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 
 export xpanelname="hestia"
 export VERSION='ubuntu'
@@ -618,7 +620,7 @@ fi
 per_thread_buffers=$(echo "($read_buffer_size+$read_rnd_buffer_size+$sort_buffer_size+$thread_stack+$join_buffer_size+$binlog_cache_size)" | bc -l)
 
 #physical_memory
-export physical_memory=$(awk '/^MemTotal/ { printf("%.0f", $2*1024 ) }' < /proc/meminfo)
+export physical_memory=$(awk '/^MemTotal/ { printf("%.0f", $2*1024 ) }' < /proc/meminfo)  #get current server ram size (in bytes)
 
 #rough calculation should be (2GB = max_connections 100) (4GB = max_connections 200)
 # For calculation, its better not to set this to lower than 90% physical_memory. Because if its lower than 90%, sometimes the max_connection calculation is wrong, because not enough available memory for even 1 per_thread_buffers. If we use 100%, maybe its too high, much higher than rough calculation
