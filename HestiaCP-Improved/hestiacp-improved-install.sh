@@ -2,7 +2,7 @@
 
 
 #----------------------------------------------------------#
-#                  upgrade system                               #
+#                  upgrade system                          #
 #----------------------------------------------------------#
 
 
@@ -487,18 +487,18 @@ greentext "Reset some settings to default value"
 
 mysql_config_file='/etc/mysql/my.cnf'
 
-#innodb_buffer_pool_size_value percentage
-if [ $memory -lt 3900000 ]; then
+#innodb_buffer_pool_size_value percentage (in K)
+if [ $real_available_memory_kb -lt 3900000 ]; then
     innodb_buffer_pool_size_percentage=40
 else
     innodb_buffer_pool_size_percentage=60
 fi
 
-innodb_buffer_pool_size_value=$( calc $innodb_buffer_pool_size_percentage/100*$memory )
+innodb_buffer_pool_size_value=$( calc $innodb_buffer_pool_size_percentage/100*$real_available_memory_kb )
 innodb_buffer_pool_size_value=$( round $innodb_buffer_pool_size_value )
 innodb_buffer_pool_size_value_text="${innodb_buffer_pool_size_value}K"
 
-#key_buffer_size_value=$( calc 20/100*$memory )
+#key_buffer_size_value=$( calc 20/100*$real_available_memory_kb )
 #key_buffer_size_value=$( round $key_buffer_size_value )
 #key_buffer_size_value_text="${key_buffer_size_value}K"
 
