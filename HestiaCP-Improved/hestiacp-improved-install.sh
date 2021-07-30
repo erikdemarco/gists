@@ -835,7 +835,7 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
     sudo systemctl restart redis-server
     
     #check redis installation
-    check_result $? 'installed redis-server'
+    check_result $? 'install redis-server'
 
     # add monit 'redis' config
     echo 'check process redis with pidfile  /var/run/redis/redis-server.pid
