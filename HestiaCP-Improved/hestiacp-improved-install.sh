@@ -124,7 +124,7 @@ echo "Y" | bash hst-install.sh -a yes -w yes -o no -v no -j no -k yes -m yes -g 
 
 #get info
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])  #get current server ram size (in K)
-available_memory
+real_available_memory=$memory	# available memory minus memory allocated for other apps, will be used later (in K)
 vIPAddress=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 
 export xpanelname="hestia"
