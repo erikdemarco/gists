@@ -820,16 +820,16 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
     sudo apt install -y redis-server
 
     #redis config: maxmemory-policy using lfu: https://redis.io/topics/lru-cache
-    sed -i -e 's/^# maxmemory-policy .*/maxmemory-policy allkeys-lfu/' /etc/redis/redis.conf
+    sed -i -e "s/^# maxmemory-policy .*/maxmemory-policy allkeys-lfu/" /etc/redis/redis.conf
 
     #redis config: its important to set timemut, because redis defualt is set to  0, meaning it will wait forever: https://blog.opstree.com/2019/04/16/redis-best-practices-and-performance-tuning/
-    sed -i -e 's/^timeout 0.*/timeout 300/' /etc/redis/redis.conf
+    sed -i -e "s/^timeout 0.*/timeout 300/" /etc/redis/redis.conf
 
     #redis config: maxmemory  
     export redis_max_memory_value=$( calc $memory_allocated_for_redis_server_kb/1024 ) #(in mb)
     redis_max_memory_value=$( round $redis_max_memory_value )
     redis_max_memory_value_text="${redis_max_memory_value}mb"
-    sed -i -e 's/^# maxmemory .*/maxmemory $redis_max_memory_value_text/' /etc/redis/redis.conf
+    sed -i -e "s/^# maxmemory .*/maxmemory $redis_max_memory_value_text/" /etc/redis/redis.conf
 
     #restart redis
     sudo systemctl restart redis-server
