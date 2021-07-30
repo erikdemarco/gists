@@ -124,7 +124,7 @@ echo "Y" | bash hst-install.sh -a yes -w yes -o no -v no -j no -k yes -m yes -g 
 
 #get info
 memory=$(grep 'MemTotal' /proc/meminfo |tr ' ' '\n' |grep [0-9])  #get current server ram size (in K)
-real_available_memory=$memory	# available memory minus memory allocated for other apps, will be used later (in K)
+real_available_memory_kb=$memory	# available memory minus memory allocated for other apps, will be used later (in K)
 vIPAddress=$(ip addr | grep 'state UP' -A2 | tail -n1 | awk '{print $2}' | cut -f1  -d'/')
 
 export xpanelname="hestia"
@@ -139,6 +139,27 @@ export BIN="${XPANEL}bin"
 #needed
 export VESTA=/usr/local/vesta/
 export HESTIA=/usr/local/hestia/
+
+
+#----------------------------------------------------------#
+#          calculate real_available_memory                 #
+#----------------------------------------------------------#
+
+# redis-server
+# allocatied memory for redis: 10% from server memory
+# maxmemory 60%-70% from allocated memory
+# https://blog.opstree.com/2019/04/16/redis-best-practices-and-performance-tuning/
+# https://docs.digitalocean.com/products/databases/redis/resources/memory-usage/
+# https://pantheon.io/docs/object-cache
+# https://docs.digitalocean.com/products/databases/redis/resources/memory-usage/
+if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
+  memory_allocated_for_redis_server_kb=$( calc 10/100*$memory )
+  memory_allocated_for_redis_server_kb=$( calc 60/100*$memory_allocated_for_redis_server_kb )
+  memory_allocated_for_redis_server_kb=$( round $memory_allocated_for_redis_server_kb )
+  real_available_memory_kb=$( calc $real_available_memory_kb-$memory_allocated_for_redis_server_kb )
+fi
+
+
 
 
 #----------------------------------------------------------#
@@ -619,14 +640,14 @@ else
 fi
 per_thread_buffers=$(echo "($read_buffer_size+$read_rnd_buffer_size+$sort_buffer_size+$thread_stack+$join_buffer_size+$binlog_cache_size)" | bc -l)
 
-#physical_memory
-export physical_memory=$(awk '/^MemTotal/ { printf("%.0f", $2*1024 ) }' < /proc/meminfo)  #get current server ram size (in bytes)
+#available_memory_for_mysql_max_connections
+export available_memory_for_mysql_max_connections=$( calc $real_available_memory_kb*1024 )  #get available server ram (in bytes)
 
 #rough calculation should be (2GB = max_connections 100) (4GB = max_connections 200)
-# For calculation, its better not to set this to lower than 90% physical_memory. Because if its lower than 90%, sometimes the max_connection calculation is wrong, because not enough available memory for even 1 per_thread_buffers. If we use 100%, maybe its too high, much higher than rough calculation
-# we have tested it with 100% physical_memory, and load test it until max. Works without an issue. But still we recommend to keep it at 90% for the sweet spot
+# For calculation, its better not to set this to lower than 90% $available_memory_for_mysql_max_connections. Because if its lower than 90%, sometimes the max_connection calculation is wrong, because not enough available memory for even 1 per_thread_buffers. If we use 100%, maybe its too high, much higher than rough calculation
+# we have tested it with 100% $available_memory_for_mysql_max_connections, and load test it until max. Works without an issue. But still we recommend to keep it at 90% for the sweet spot
 #calculate max_connections (50-70% of real max_connections is recommended so we not use too much memory. especially server with shared system)
-max_connections=$(echo "($physical_memory-$global_buffers)/$per_thread_buffers" | bc -l)
+max_connections=$(echo "($available_memory_for_mysql_max_connections-$global_buffers)/$per_thread_buffers" | bc -l)
 max_connections=$(echo "50 / 100 * $max_connections" | bc -l)
 max_connections=$( round $max_connections )
 
