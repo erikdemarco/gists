@@ -63,9 +63,6 @@ sed -i -e 's/^bind 127.0.0.1.*/bind 0.0.0.0/' /etc/redis/redis.conf
 #redis config: maxmemory-policy using lfu: https://redis.io/topics/lru-cache
 sed -i -e "/bind 0.0.0.0/a maxmemory-policy allkeys-lfu" /etc/redis/redis.conf
 
-#redis config: its important to set timemout, because redis defualt is set to  0, meaning it will wait forever: https://blog.opstree.com/2019/04/16/redis-best-practices-and-performance-tuning/
-sed -i -e "/bind 0.0.0.0/a timeout 300" /etc/redis/redis.conf
-
 #redis config: maxmemory 50% of node memory 
 # https://github.com/W3EDGE/w3-total-cache/wiki/FAQ:-Installation:-Redis-Server
 redis_max_memory_value=$( calc 50/100*$physical_memory_mb )
