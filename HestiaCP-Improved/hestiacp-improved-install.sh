@@ -732,14 +732,18 @@ sudo systemctl restart nginx
 #      		optimizing nginx (etc)        		   #
 #----------------------------------------------------------#
 
-# Respect existing headers
+# Respect existing headers & others
 # https://www.nginx.com/blog/nginx-caching-guide/
 # 'proxy_cache_use_stale' use this instead: https://www.nginx.com/resources/wiki/start/topics/examples/reverseproxycachingexample/
 # 'proxy_cache_key' rollback to defautl value, doesnt make sense to use cookie_user: https://github.com/mysociety/yournextrepresentative/issues/455#issuecomment-123997509
 # 'proxy_ignore_headers' do not ignore 'control-cache' make it respect existing headers: http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_ignore_headers
+# https://forum.nginx.org/read.php?2,2450,273132
+# if you want to change the proxy_cache_path, its better to also change proxy_cache_path in 'hestiacp/install/deb/templates/web/nginx/caching.sh'
+# proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=cache:10m inactive=60m max_size=1024m;
 sed -i -e '/proxy_cache_key /s/.*/    proxy_cache_key "$scheme$proxy_host$request_uri";/' /etc/nginx/nginx.conf
 sed -i -e '/proxy_cache_use_stale /s/.*/    proxy_cache_use_stale  error timeout invalid_header updating http_500 http_502 http_503 http_504;/' /etc/nginx/nginx.conf
 sed -i -e 's/proxy_ignore_headers /#&/' /etc/nginx/nginx.conf
+sed -i -e '/proxy_cache_valid /s/.*/    proxy_cache_valid 200 1d;/' /etc/nginx/nginx.conf
 
 #restart nginx
 sudo systemctl restart nginx
