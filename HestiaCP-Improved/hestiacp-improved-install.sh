@@ -729,14 +729,20 @@ greentext "Added script to autoupdate cloudflare ips"
 sudo systemctl restart nginx
 
 #----------------------------------------------------------#
-#      optimizing nginx (etc)        #
+#      		optimizing nginx (etc)        		   #
 #----------------------------------------------------------#
 
 # Respect existing headers
 # https://www.nginx.com/blog/nginx-caching-guide/
-# http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache_valid
-# see proxy_cache_valid & proxy_ignore_headers
-# to fix /etc/nginx/nginx.conf
+# 'proxy_cache_use_stale' use this instead: https://www.nginx.com/resources/wiki/start/topics/examples/reverseproxycachingexample/
+# 'proxy_cache_key' rollback to defautl value, doesnt make sense to use cookie_user: https://github.com/mysociety/yournextrepresentative/issues/455#issuecomment-123997509
+# 'proxy_ignore_headers' do not ignore 'control-cache' make it respect existing headers: http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_ignore_headers
+sed -i -e '/proxy_cache_key /s/.*/    proxy_cache_key "$scheme$proxy_host$request_uri";/' /etc/nginx/nginx.conf
+sed -i -e '/proxy_cache_use_stale /s/.*/    proxy_cache_use_stale  error timeout invalid_header updating http_500 http_502 http_503 http_504;/' /etc/nginx/nginx.conf
+sed -i -e 's/proxy_ignore_headers /#&/' /etc/nginx/nginx.conf
+
+#restart nginx
+sudo systemctl restart nginx
 
 #----------------------------------------------------------#
 #      		optimizing named   			   #
