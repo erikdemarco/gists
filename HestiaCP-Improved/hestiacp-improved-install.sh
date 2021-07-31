@@ -840,6 +840,12 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
     #sed -i -e "s/^# unixsocket .*/unixsocket \/run\/redis\/redis.sock/" /etc/redis/redis.conf
     #sed -i -e "s/^# unixsocketperm .*/unixsocketperm 777/" /etc/redis/redis.conf	#will not run if we set lower than '777', because we dont set redis as the owner of redis.sock
 
+    # remove warning from /var/log/redis/redis-server.log
+    sysctl vm.overcommit_memory=1   #instant effect 
+    echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf #persist after reboot
+    echo never > /sys/kernel/mm/transparent_hugepage/enabled    #instant effect 
+    sudo apt install -y sysfsutils && echo 'kernel/mm/transparent_hugepage/enabled = never' >> /etc/sysfs.conf  #persist after reboot. we tried to use rc.local and crontab with no succes, maybe because redis start earlier than those. we use sysfs instead. https://askubuntu.com/questions/597372/how-do-i-modify-sys-kernel-mm-transparent-hugepage-enabled
+
     #restart redis
     sudo systemctl restart redis-server
     
