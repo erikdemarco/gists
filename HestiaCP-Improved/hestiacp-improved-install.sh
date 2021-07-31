@@ -835,9 +835,10 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
     
     # redis config: unixsocket
     # https://guides.wp-bullet.com/how-to-configure-redis-to-use-unix-socket-speed-boost/
-    sudo mkdir -p /run/redis/	#create redis dir in 'run' if not exist
-    sed -i -e "s/^# unixsocket .*/unixsocket \/run\/redis\/redis.sock/" /etc/redis/redis.conf
-    sed -i -e "s/^# unixsocketperm .*/unixsocketperm 777/" /etc/redis/redis.conf	#will not run if we set lower than '777', because we dont set redis as the owner of redis.sock
+    # based on our in house very intensive load test, there is no performance advantage between socket and ip. not even a slight. So we turn it off for now
+    #sudo mkdir -p /run/redis/	#create redis dir in 'run' if not exist
+    #sed -i -e "s/^# unixsocket .*/unixsocket \/run\/redis\/redis.sock/" /etc/redis/redis.conf
+    #sed -i -e "s/^# unixsocketperm .*/unixsocketperm 777/" /etc/redis/redis.conf	#will not run if we set lower than '777', because we dont set redis as the owner of redis.sock
 
     #restart redis
     sudo systemctl restart redis-server
