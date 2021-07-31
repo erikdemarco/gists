@@ -824,13 +824,20 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
     sed -i -e "s/^# maxmemory-policy .*/maxmemory-policy allkeys-lfu/" /etc/redis/redis.conf
 
     #redis config: its important to set timemut, because redis defualt is set to  0, meaning it will wait forever: https://blog.opstree.com/2019/04/16/redis-best-practices-and-performance-tuning/
-    sed -i -e "s/^timeout 0.*/timeout 300/" /etc/redis/redis.conf
+    #we dont need this because we are protected by 'tcp-keepalive' setting. https://rtfm.co.ua/en/draft-eng-redis-main-configuration-parameters-and-performance-tuning-overview/
+    #sed -i -e "s/^timeout 0.*/timeout 300/" /etc/redis/redis.conf
 
     #redis config: maxmemory  
     export redis_max_memory_value=$( calc $memory_allocated_for_redis_server_kb/1024 ) #(in mb)
     redis_max_memory_value=$( round $redis_max_memory_value )
     redis_max_memory_value_text="${redis_max_memory_value}mb"
     sed -i -e "s/^# maxmemory .*/maxmemory $redis_max_memory_value_text/" /etc/redis/redis.conf
+    
+    # redis config: unixsocket
+    # https://guides.wp-bullet.com/how-to-configure-redis-to-use-unix-socket-speed-boost/
+    sudo mkdir -p /run/redis/	#create redis dir in 'run' if not exist
+    sed -i -e "s/^# unixsocket .*/unixsocket \/run\/redis\/redis.sock/" /etc/redis/redis.conf
+    sed -i -e "s/^# unixsocketperm .*/unixsocketperm 700/" /etc/redis/redis.conf
 
     #restart redis
     sudo systemctl restart redis-server
