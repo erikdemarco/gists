@@ -729,6 +729,16 @@ greentext "Added script to autoupdate cloudflare ips"
 sudo systemctl restart nginx
 
 #----------------------------------------------------------#
+#      optimizing nginx (etc)        #
+#----------------------------------------------------------#
+
+# Respect existing headers
+# https://www.nginx.com/blog/nginx-caching-guide/
+# http://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_cache_valid
+# see proxy_cache_valid & proxy_ignore_headers
+# to fix /etc/nginx/nginx.conf
+
+#----------------------------------------------------------#
 #      		optimizing named   			   #
 #----------------------------------------------------------#
 
