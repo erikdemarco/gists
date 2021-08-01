@@ -703,9 +703,9 @@ fi
 sudo systemctl restart nginx
 
 
-#---------------------------------------------------------------#
-# optimizing nginx (add wordpress cached rate-limited template) #
-#---------------------------------------------------------------#
+#----------------------------------------------------------------#
+# optimizing nginx (add wordpress caching rate-limited template) #
+#----------------------------------------------------------------#
 
 #download 'caching-wordpress-rate-limited-one' template
 if [ "$rate_limit_zone_added" -eq 1 ]; then
@@ -716,6 +716,18 @@ if [ "$rate_limit_zone_added" -eq 1 ]; then
 else
     redtext "Fail adding 'caching-wordpress-rate-limited-one' nginx template"
 fi
+
+# fix "purge cache" button to show if template name contains 'caching', instead of just show only if template named 'caching'
+word_to_find="\$v_proxy_template == 'caching'"
+word_to_replace="strpos(\$v_proxy_template, 'caching') !== false"
+sed -i -e "s/$word_to_find/$word_to_replace/g" ${XPANEL}web/templates/pages/edit_web.html
+word_to_find="select.val() != 'caching'"
+word_to_replace="select.val().includes('caching') == false"
+sed -i -e "s/$word_to_find/$word_to_replace/g" ${XPANEL}web/js/pages/edit_web.js
+
+#restart nginx
+sudo systemctl restart nginx
+
 
 #----------------------------------------------------------#
 #      optimizing nginx (autoupdate cloudflare ips)        #
