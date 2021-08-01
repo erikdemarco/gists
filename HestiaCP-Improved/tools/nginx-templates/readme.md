@@ -11,7 +11,7 @@ Benchmark rank for static files:
 3. Slowest: try_files      $uri @fallback;
 
 Notes caching template:
--) We want to add browser cache if cache status is HIT, but fail because of "if is evil". Example code:
+-) We want to add browser cache if cache status is HIT, but fail because of "if is evil". So its better to add this header via wordpress. Example code:
 if ($upstream_cache_status = "HIT") {
     expires 1m;
 } 
