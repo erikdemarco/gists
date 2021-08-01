@@ -709,8 +709,8 @@ sudo systemctl restart nginx
 
 #download 'caching-wordpress-rate-limited-one' template
 if [ "$rate_limit_zone_added" -eq 1 ]; then
-    #cp ${XPANEL}data/templates/web/nginx/caching.sh ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.sh
-    curl -o ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.sh https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/caching-wordpress-rate-limited-one.sh
+    cp ${XPANEL}data/templates/web/nginx/caching.sh ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.sh
+    #curl -o ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.sh https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/caching-wordpress-rate-limited-one.sh	#dont know why the levels still use "2" after this gets enabled, setting on http block also has been changed but still keep applying "2"
     curl -o ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.stpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/caching-wordpress-rate-limited-one.stpl
     curl -o ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.tpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/caching-wordpress-rate-limited-one.tpl
     greentext "Added 'caching-wordpress-rate-limited-one' nginx template"
