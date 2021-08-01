@@ -38,7 +38,7 @@ server {
             set $no_cache 1;
             set $skip_reason "${skip_reason}-http_cookie";
         } 
-        # Add skip cache reason to header
+        # Add cache status and skip cache reason to header
         add_header "X-WP-Cache" $upstream_cache_status;
         add_header "X-WP-Cache-Skip" $skip_reason;
 
