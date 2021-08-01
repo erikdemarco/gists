@@ -703,6 +703,20 @@ fi
 sudo systemctl restart nginx
 
 
+#---------------------------------------------------------------#
+# optimizing nginx (add wordpress cached rate-limited template) #
+#---------------------------------------------------------------#
+
+#download 'caching-wordpress-rate-limited-one' template
+if [ "$rate_limit_zone_added" -eq 1 ]; then
+    cp ${XPANEL}data/templates/web/nginx/caching.sh ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.sh
+    curl -o ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.stpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/caching-wordpress-rate-limited-one.stpl
+    curl -o ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.tpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/caching-wordpress-rate-limited-one.tpl
+    greentext "Added 'caching-wordpress-rate-limited-one' nginx template"
+else
+    redtext "Fail adding 'caching-wordpress-rate-limited-one' nginx template"
+fi
+
 #----------------------------------------------------------#
 #      optimizing nginx (autoupdate cloudflare ips)        #
 #----------------------------------------------------------#
