@@ -39,8 +39,8 @@ server {
             set $skip_reason "${skip_reason}-http_cookie";
         } 
         # Add cache status and skip cache reason to header
-        add_header "X-WP-Cache" $upstream_cache_status;
-        add_header "X-WP-Cache-Skip" $skip_reason;
+        add_header "X-Cache-Status" $upstream_cache_status;
+        add_header "X-Cache-Skip" $skip_reason;
 
         proxy_cache %domain%;
         proxy_cache_valid 15m;
