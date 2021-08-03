@@ -52,7 +52,7 @@ server {
     }
     
 
-    location ~* ^.+\.(%proxy_extensions%)$ {
+    location ~* ^.+\.(%proxy_extentions%)$ {
         proxy_cache    off;
         root           %docroot%;
         access_log     /var/log/%web_system%/domains/%domain%.log combined;
