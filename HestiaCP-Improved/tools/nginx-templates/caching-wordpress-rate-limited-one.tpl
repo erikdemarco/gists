@@ -55,8 +55,7 @@ server {
     location ~* ^.+\.(%proxy_extentions%)$ {
         proxy_cache    off;
         root           %docroot%;
-        access_log     /var/log/%web_system%/domains/%domain%.log combined;
-        access_log     /var/log/%web_system%/domains/%domain%.bytes bytes;
+        access_log     off;
         expires        max;
         try_files      $uri @fallback;
     }
