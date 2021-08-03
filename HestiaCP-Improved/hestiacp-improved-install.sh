@@ -709,7 +709,7 @@ sudo systemctl restart nginx
 
 #download 'caching-wordpress-rate-limited-one' template
 if [ "$rate_limit_zone_added" -eq 1 ]; then
-    cp ${XPANEL}data/templates/web/nginx/caching.sh ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.sh
+    cp ${XPANEL}data/templates/web/nginx/caching.sh ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.sh && chmod 755 ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.sh	#make sure its executable
     #curl -o ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.sh https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/caching-wordpress-rate-limited-one.sh && chmod 755 ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.sh	#make sure its executable and cache levels still "2", if its differs than hestiacp it will show "cache had previously different levels"
     curl -o ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.stpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/caching-wordpress-rate-limited-one.stpl
     curl -o ${XPANEL}data/templates/web/nginx/caching-wordpress-rate-limited-one.tpl https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/tools/nginx-templates/caching-wordpress-rate-limited-one.tpl
