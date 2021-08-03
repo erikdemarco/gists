@@ -14,6 +14,14 @@ server {
         limit_req zone=req_limit_per_ip_one burst=10 nodelay;
         proxy_pass      http://%ip%:%web_port%;
 
+        # Tuning
+        # https://www.nginx.com/blog/benefits-of-microcaching-nginx/amp/
+        # https://nginx.org/en/docs/http/ngx_http_log_module.html#access_log
+        # https://medium.com/staqu-dev-logs/optimizations-tuning-nginx-for-better-rps-of-an-http-api-de2a0919744a
+        # https://loadforge.com/guides/high-performance-nginx
+        access_log off;
+        proxy_cache_lock on;
+
         # Cache bypass
         # https://wordpress.org/support/article/nginx/#nginx-fastcgi_cache
         # https://gridpane.com/kb/gridpane-default-cache-exclusions/
