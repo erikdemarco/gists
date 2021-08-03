@@ -6,7 +6,16 @@
 server {
     listen      %ip%:%proxy_port%;
     server_name %domain_idn% %alias_idn%;
-        
+    
+    # TUning TTFB
+    # https://www.nginx.com/blog/7-tips-for-faster-http2-performance/
+    # output_buffers default https://github.com/nginx/nginx/commit/a0d7df93a0188f79733351a7e7e8168b6fdf698e
+    # proxy_buffers default. ubuntu memory pagesize is 4k, so use 4k. average htmlsize according to https://httparchive.org/reports/page-weight#bytesHtml is 30k, so the optimum is 8*4k (nginx default). https://www.getpagespeed.com/server-setup/nginx/tuning-proxy_buffer_size-in-nginx
+    # ssl_buffer_size default. http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_buffer_size
+    proxy_buffers 8 4k;
+    output_buffers 2 32k;
+    ssl_buffer_size 4k;
+    
     include %home%/%user%/conf/web/%domain%/nginx.forcessl.conf*;
 
     location / {
@@ -14,7 +23,7 @@ server {
         limit_req zone=req_limit_per_ip_one burst=10 nodelay;
         proxy_pass      http://%ip%:%web_port%;
 
-        # Tuning
+        # Tuning RPS
         # https://www.nginx.com/blog/benefits-of-microcaching-nginx/amp/
         # https://nginx.org/en/docs/http/ngx_http_log_module.html#access_log
         # https://medium.com/staqu-dev-logs/optimizations-tuning-nginx-for-better-rps-of-an-http-api-de2a0919744a
