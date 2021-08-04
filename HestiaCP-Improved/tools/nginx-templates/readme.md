@@ -17,8 +17,9 @@ if ($upstream_cache_status = "HIT") {
 } 
 
 Note nginx tuning:
--) open_file_cache not effective (tested). Because its just a caching system for metadata operations (file mtime, file existence etc), not for file content.
+-) open_file_cache not effective (tested). Because its just a caching system for metadata operations (file mtime, file existence etc), not for file content.<br>
 -) 'aio threads' not effective to increase performance (tested)
+-) reuseport increase performance but cant be used in hestia because it can only be declared once to the same socket https://serverfault.com/questions/1000365/correct-way-to-use-reuseport-in-nginx-virtual-host
 -) todo: keepalive 
 https://stackoverflow.com/questions/46771389/why-does-nginx-proxy-pass-close-my-connection
 https://ma.ttias.be/enable-keepalive-connections-in-nginx-upstream-proxy-configurations/
