@@ -1,1 +1,2 @@
 -) remove apache completely
+-) nginx tuning by using keepalive
