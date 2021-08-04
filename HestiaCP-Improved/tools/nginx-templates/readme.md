@@ -15,3 +15,6 @@ Notes caching template:
 if ($upstream_cache_status = "HIT") {
     expires 1m;
 } 
+
+Note nginx tuning:
+-) 'aio threads' not effective to increase performance (tested)
