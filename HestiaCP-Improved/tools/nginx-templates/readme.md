@@ -17,6 +17,7 @@ if ($upstream_cache_status = "HIT") {
 } 
 
 Note nginx tuning:
+-) open_file_cache not effective (tested). Because its just a caching system for metadata operations (file mtime, file existence etc), not for file content.
 -) 'aio threads' not effective to increase performance (tested)
 -) todo: keepalive 
 https://stackoverflow.com/questions/46771389/why-does-nginx-proxy-pass-close-my-connection
