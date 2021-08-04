@@ -18,3 +18,6 @@ if ($upstream_cache_status = "HIT") {
 
 Note nginx tuning:
 -) 'aio threads' not effective to increase performance (tested)
+-) todo: keepalive 
+https://stackoverflow.com/questions/46771389/why-does-nginx-proxy-pass-close-my-connection
+https://ma.ttias.be/enable-keepalive-connections-in-nginx-upstream-proxy-configurations/
