@@ -376,6 +376,21 @@ if [ $vAddSsh == "y" ] || [ $vAddSsh == "Y" ]; then
 fi
 
 #----------------------------------------------------------#
+#              		 OS tuning                     	   #
+#----------------------------------------------------------#
+
+
+# increase max open file descriptor, So we can increase maxclients for webserver like nginx
+# https://www.programmersought.com/article/34684954797/
+# https://www.fatalerrors.org/a/summary-of-nginx-s-too-many-open-files.html
+# https://superuser.com/a/1027505
+os_max_file_open=$(grep -r MemTotal /proc/meminfo | awk '{printf("%d\n",$2/1000)}')
+ulimit -n $os_max_file_open	# instant result, so we dont need to reboot (only for root)
+echo "*   soft   nofile  $os_max_file_open" >> /etc/security/limits.conf
+echo "root   soft   nofile  $os_max_file_open" >> /etc/security/limits.conf
+
+
+#----------------------------------------------------------#
 #               	optimizing php                     #
 #----------------------------------------------------------#
 
