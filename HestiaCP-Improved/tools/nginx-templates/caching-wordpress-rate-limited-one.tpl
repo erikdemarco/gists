@@ -7,7 +7,17 @@ server {
     listen      %ip%:%proxy_port%;
     server_name %domain_idn% %alias_idn%;
     
-    # TUning TTFB
+
+    # Tuning SSL (server block)
+    # https://www.nginx.com/blog/10-tips-for-10x-application-performance/#Tip-5&nbsp;%E2%80%93-Optimize-SSL/TLS
+    # https://www.nginx.com/blog/10-tips-for-10x-application-performance/#Tip-5&nbsp;%E2%80%93-Optimize-SSL/TLS
+    # ssl_session_cache & ssl_session_timeout. for the timeout defualtis ok because the more it gets the more memory it needs. 1m can store 4000reqs
+    # ssl_stapling. we dont need this if using CF, Full (no strict)? https://blog.cloudflare.com/ocsp-stapling-how-cloudflare-just-made-ssl-30/
+    # ssl_session_cache shared:SSL:10m;     #hestiacp alreaady set this, we cant set it anymore
+    ssl_session_timeout 5m;
+    ssl_session_tickets on;
+    
+    # TUning TTFB (server block)
     # https://www.nginx.com/blog/7-tips-for-faster-http2-performance/
     # output_buffers default https://github.com/nginx/nginx/commit/a0d7df93a0188f79733351a7e7e8168b6fdf698e
     # proxy_buffers default. this will make rps more more higher, because it save a lot of memory, not spent too much memory for each page. ubuntu memory pagesize is 4k, so use 4k. average htmlsize according to https://httparchive.org/reports/page-weight#bytesHtml is 30k, so the optimum is 8*4k (nginx default). https://www.getpagespeed.com/server-setup/nginx/tuning-proxy_buffer_size-in-nginx, http://disq.us/p/1o6fcqc
@@ -23,7 +33,7 @@ server {
         limit_req zone=req_limit_per_ip_one burst=10 nodelay;
         proxy_pass      http://%ip%:%web_port%;
 
-        # Tuning RPS
+        # Tuning RPS (server block)
         # https://www.nginx.com/blog/benefits-of-microcaching-nginx/amp/
         # https://nginx.org/en/docs/http/ngx_http_log_module.html#access_log
         # https://medium.com/staqu-dev-logs/optimizations-tuning-nginx-for-better-rps-of-an-http-api-de2a0919744a
