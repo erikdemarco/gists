@@ -42,6 +42,7 @@ server {
         # https://nginx.org/en/docs/http/ngx_http_log_module.html#access_log
         # https://medium.com/staqu-dev-logs/optimizations-tuning-nginx-for-better-rps-of-an-http-api-de2a0919744a
         # https://loadforge.com/guides/high-performance-nginx
+        # worker_processes (main block) must be set to auto. so it will increase maxclient we can handle by the cpu core count. so 4core can handle approx 4096client/sec (worker_processes * worker_connections = max clients)
         access_log off;
         proxy_cache_lock on;
 
