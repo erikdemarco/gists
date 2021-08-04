@@ -4,7 +4,10 @@
 #=======================================================================#
 
 server {
-    listen      %ip%:%proxy_port%;
+
+    # reuseport. https://www.nginx.com/blog/socket-sharding-nginx-release-1-9-1/
+    listen      %ip%:%proxy_port% reuseport;
+    
     server_name %domain_idn% %alias_idn%;
     
 
