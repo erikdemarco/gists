@@ -505,13 +505,16 @@ mysql_config_file='/etc/mysql/my.cnf'
 
 #innodb_buffer_pool_size_value percentage (in K)
 if [ $real_available_memory_kb -lt 3900000 ]; then
-    innodb_buffer_pool_size_percentage=40
+    innodb_buffer_pool_size_percentage=35
 else
-    innodb_buffer_pool_size_percentage=60
+    innodb_buffer_pool_size_percentage=50
 fi
 
 innodb_buffer_pool_size_value=$( calc $innodb_buffer_pool_size_percentage/100*$real_available_memory_kb )
 innodb_buffer_pool_size_value=$( round $innodb_buffer_pool_size_value )
+if [ $real_available_memory_kb -lt 900000 ]; then
+	innodb_buffer_pool_size_value=128000
+fi
 innodb_buffer_pool_size_value_text="${innodb_buffer_pool_size_value}K"
 
 #key_buffer_size_value=$( calc 20/100*$real_available_memory_kb )
