@@ -18,7 +18,7 @@ server {
     ssl_session_timeout 5m;
     ssl_session_tickets on;
     
-    # TUning TTFB (server block)
+    # Tuning TTFB (server block)
     # https://www.nginx.com/blog/7-tips-for-faster-http2-performance/
     # output_buffers default https://github.com/nginx/nginx/commit/a0d7df93a0188f79733351a7e7e8168b6fdf698e
     # proxy_buffers default. this will make rps more more higher, because it save a lot of memory, not spent too much memory for each page. ubuntu memory pagesize is 4k, so use 4k. average htmlsize according to https://httparchive.org/reports/page-weight#bytesHtml is 30k, so the optimum is 8*4k (nginx default). https://www.getpagespeed.com/server-setup/nginx/tuning-proxy_buffer_size-in-nginx, http://disq.us/p/1o6fcqc
@@ -26,6 +26,31 @@ server {
     proxy_buffers 8 4k;
     output_buffers 2 32k;
     ssl_buffer_size 4k;
+    
+    # Cache bypass (moved from location block, better to put 'if' outside location block)
+    # https://wordpress.org/support/article/nginx/#nginx-fastcgi_cache
+    # https://gridpane.com/kb/gridpane-default-cache-exclusions/
+    set $skip_reason "";
+    # POST requests and urls with a query string should always go to PHP
+    if ($request_method = POST) {
+        set $no_cache 1;
+        set $skip_reason "${skip_reason}-POST";
+    }
+    # Don't cache any url that includes a query string
+    if ($query_string != "") {
+        set $no_cache 1;
+        set $skip_reason "${skip_reason}-query_string";
+    }   
+    # Don't cache uris containing the following segments
+    if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).php|wp-.*.php|/feed/|index.php|wp-comments-popup.php|wp-links-opml.php|wp-locations.php|sitemap(_index)?.xml|[a-z0-9_-]+-sitemap([0-9]+)?.xml)") {
+        set $no_cache 1;
+        set $skip_reason "${skip_reason}-request_uri";
+    }   
+    # Don't use the cache for logged in users or recent commenters
+    if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_no_cache|wordpress_logged_in") {
+        set $no_cache 1;
+        set $skip_reason "${skip_reason}-http_cookie";
+    } 
     
     include %home%/%user%/conf/web/%domain%/nginx.forcessl.conf*;
 
@@ -43,30 +68,6 @@ server {
         access_log off;
         proxy_cache_lock on;
 
-        # Cache bypass
-        # https://wordpress.org/support/article/nginx/#nginx-fastcgi_cache
-        # https://gridpane.com/kb/gridpane-default-cache-exclusions/
-        set $skip_reason "";
-        # POST requests and urls with a query string should always go to PHP
-        if ($request_method = POST) {
-            set $no_cache 1;
-            set $skip_reason "${skip_reason}-POST";
-        }
-        # Don't cache any url that includes a query string
-        if ($query_string != "") {
-            set $no_cache 1;
-            set $skip_reason "${skip_reason}-query_string";
-        }   
-        # Don't cache uris containing the following segments
-        if ($request_uri ~* "(/wp-admin/|/xmlrpc.php|/wp-(app|cron|login|register|mail).php|wp-.*.php|/feed/|index.php|wp-comments-popup.php|wp-links-opml.php|wp-locations.php|sitemap(_index)?.xml|[a-z0-9_-]+-sitemap([0-9]+)?.xml)") {
-            set $no_cache 1;
-            set $skip_reason "${skip_reason}-request_uri";
-        }   
-        # Don't use the cache for logged in users or recent commenters
-        if ($http_cookie ~* "comment_author|wordpress_[a-f0-9]+|wp-postpass|wordpress_no_cache|wordpress_logged_in") {
-            set $no_cache 1;
-            set $skip_reason "${skip_reason}-http_cookie";
-        } 
         # Add cache status and skip cache reason to header
         add_header "X-Caching-Status" $upstream_cache_status;
         add_header "X-Caching-Skip" $skip_reason;
