@@ -147,7 +147,8 @@ export HESTIA=/usr/local/hestia/
 
 # redis-server
 # allocatied memory for redis: 10% from server memory
-# maxmemory 60%-70% from allocated memory
+# maxmemory 50%-70% from allocated memory
+# while saving an RDB file on disk or rewriting the AOF log Redis may use up to 2 times the memory normally used
 # https://blog.opstree.com/2019/04/16/redis-best-practices-and-performance-tuning/
 # https://docs.digitalocean.com/products/databases/redis/resources/memory-usage/
 # https://pantheon.io/docs/object-cache
@@ -155,7 +156,7 @@ export HESTIA=/usr/local/hestia/
 # https://gridpane.com/kb/configure-redis/
 if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
   memory_allocated_for_redis_server_kb=$( calc 10/100*$memory )
-  memory_allocated_for_redis_server_kb=$( calc 60/100*$memory_allocated_for_redis_server_kb )
+  memory_allocated_for_redis_server_kb=$( calc 50/100*$memory_allocated_for_redis_server_kb )
   memory_allocated_for_redis_server_kb=$( round $memory_allocated_for_redis_server_kb )
   real_available_memory_kb=$( calc $real_available_memory_kb-$memory_allocated_for_redis_server_kb )
 fi
