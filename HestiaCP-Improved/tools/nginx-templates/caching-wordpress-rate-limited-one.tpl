@@ -23,6 +23,7 @@ server {
     # output_buffers default https://github.com/nginx/nginx/commit/a0d7df93a0188f79733351a7e7e8168b6fdf698e
     # proxy_buffers default. this will make rps more more higher, because it save a lot of memory, not spent too much memory for each page. ubuntu memory pagesize is 4k, so use 4k. average htmlsize according to https://httparchive.org/reports/page-weight#bytesHtml is 30k, so the optimum is 8*4k (nginx default). https://www.getpagespeed.com/server-setup/nginx/tuning-proxy_buffer_size-in-nginx, http://disq.us/p/1o6fcqc
     # ssl_buffer_size default. http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_buffer_size
+    proxy_buffer_size 8k;   #default: proxy_buffer_size 4k; if its too small sometimes it causes 'upstream sent too big header while reading response header from upstream', happens when using servertiming of wp-laps profiler plugin
     proxy_buffers 8 4k;
     output_buffers 2 32k;
     ssl_buffer_size 4k;
