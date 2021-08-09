@@ -900,11 +900,15 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
     sed -i -e "s/^# maxmemory .*/maxmemory $redis_max_memory_value_text/" /etc/redis/redis.conf
     
     # redis config: unixsocket
+    # https://mummila.net/nuudelisoppa/2018/04/20/switching-redis-from-tcp-port-to-unix-socket-in-ubuntu-16-04-with-nextcloud-running-under-apache/
+    # https://gulchuk.com/blog/how-to-connect-to-redis-by-unix-socket-only
     # https://guides.wp-bullet.com/how-to-configure-redis-to-use-unix-socket-speed-boost/
+    # https://wordpress.org/support/topic/redis-socket-support-3/
     # based on our in house very intensive load test, there is no performance advantage between socket and ip. not even a slight. So we turn it off for now
     #sudo mkdir -p /run/redis/	#create redis dir in 'run' if not exist
     #sed -i -e "s/^# unixsocket .*/unixsocket \/run\/redis\/redis.sock/" /etc/redis/redis.conf
     #sed -i -e "s/^# unixsocketperm .*/unixsocketperm 777/" /etc/redis/redis.conf	#will not run if we set lower than '777', because we dont set redis as the owner of redis.sock
+    ##sed -i -e "s/^port 6379.*/port 0/" /etc/redis/redis.conf	#if you dont need to connect redis via TCP anymore, you can disable listening the TCP here
 
     # remove warning from /var/log/redis/redis-server.log
     # note: 'madvise' more saver than 'never' https://github.com/redis/redis/issues/3895 | https://www.nginx.com/blog/optimizing-web-servers-for-high-throughput-and-low-latency/
