@@ -82,6 +82,13 @@ server {
 
     }
     
+    # Rate limit wp-login.php
+    # https://www.nginx.com/blog/9-tips-for-improving-wordpress-performance-with-nginx/
+    # https://easyengine.io/tutorials/nginx/block-wp-login-php-bruteforce-attack/
+    location = /wp-login.php {
+        limit_req zone=req_limit_per_ip_login burst=1 nodelay;
+        proxy_pass      http://%ip%:%web_port%;
+    }
 
     location ~* ^.+\.(%proxy_extentions%)$ {
         proxy_cache    off;
