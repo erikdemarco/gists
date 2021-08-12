@@ -699,6 +699,9 @@ if [ "$grepc" -eq 0 ]; then
     #add limit_req settings
     sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_log_level error;\n    limit_req_status 429;|g' /etc/nginx/nginx.conf
 
+    #add limit_req zone 'login'
+    sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip_login:10m rate=1r/s;|g' /etc/nginx/nginx.conf
+
     #add limit_req zone 'one'
     sed -i 's|server_names_hash_bucket_size   512;|server_names_hash_bucket_size   512;\n    limit_req_zone $binary_remote_addr zone=req_limit_per_ip_one:10m rate=5r/s;|g' /etc/nginx/nginx.conf
 
