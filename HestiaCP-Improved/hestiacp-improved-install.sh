@@ -793,6 +793,7 @@ sed -i -e 's/proxy_ignore_headers /#&/' /etc/nginx/nginx.conf
 sed -i -e '/proxy_cache_valid /s/.*/    proxy_cache_valid 200 1d;/' /etc/nginx/nginx.conf
 
 # bugfix wordpress www to non-www redirect loop (proxy_cache_key / fastcgi_cache_key)
+# use '$host' instead of '$proxy_host', because if we use '$proxy_host' it will not differentiate the http_host, thus causing infinite loop
 # https://www.nginx.com/blog/9-tips-for-improving-wordpress-performance-with-nginx/
 # https://wordpress.org/support/article/nginx/
 sed -i -e '/proxy_cache_key /s/.*/    proxy_cache_key "$scheme$request_method$host$request_uri";/' /etc/nginx/nginx.conf
