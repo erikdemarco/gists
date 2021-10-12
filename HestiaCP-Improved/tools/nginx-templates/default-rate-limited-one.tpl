@@ -8,7 +8,11 @@
 server {
     listen      %ip%:%proxy_port%;
     server_name %domain_idn% %alias_idn%;
-        
+
+    #fix 'upstream sent too big header' sometimes happens during wp_logout
+    proxy_buffer_size 8k;
+    proxy_buffers 8 4k;
+
     include %home%/%user%/conf/web/%domain%/nginx.forcessl.conf*;
 
     location / {
