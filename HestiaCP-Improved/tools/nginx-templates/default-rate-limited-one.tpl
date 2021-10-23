@@ -12,6 +12,7 @@ server {
     #fix 'upstream sent too big header' sometimes happens during wp_logout
     proxy_buffer_size 8k;
     proxy_buffers 8 4k;
+    proxy_busy_buffers_size 16k;
 
     include %home%/%user%/conf/web/%domain%/nginx.forcessl.conf*;
 
