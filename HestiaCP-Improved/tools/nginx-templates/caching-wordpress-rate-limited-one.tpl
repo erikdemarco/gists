@@ -25,6 +25,7 @@ server {
     # ssl_buffer_size default. http://nginx.org/en/docs/http/ngx_http_ssl_module.html#ssl_buffer_size
     proxy_buffer_size 8k;   #default: proxy_buffer_size 4k; if its too small sometimes it causes 'upstream sent too big header while reading response header from upstream', happens when using servertiming of wp-laps profiler plugin
     proxy_buffers 8 4k;
+    proxy_busy_buffers_size 16k;
     output_buffers 2 32k;
     ssl_buffer_size 4k;
     
