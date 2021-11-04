@@ -100,6 +100,11 @@ if [ $vDropboxUploader == "y" ] || [ $vDropboxUploader == "Y" ]; then
   read -r -p "Please input your dropbox Generated access token: " vDropboxUploaderKey
 fi
 
+#additional open_basedir rule
+read -r -p "Do you want to add additional directory to apache's open_basedir? [y/N] " vApacheOpenBasedir
+if [ $vApacheOpenBasedir == "y" ] || [ $vApacheOpenBasedir == "Y" ]; then
+  read -r -p "Please input your additional directory, separated by semicolon, do not add any quote (EXAMPLE: '/home/user1/dir1:/home/user1/dir2'): " vApacheOpenBasedirRule
+fi
 
 vAddString="-r $vPort -s $vHostname -e $vEmail -p $vPassword"
 
@@ -227,9 +232,15 @@ fi
 greentext "fixing template bug..."
 
 
-#deactivate 'open_basedir' line from the 'default' template
-sed -i -e '/open_basedir/s/.*/#deleted#/' ${XPANEL}data/templates/web/apache2/default.stpl
-sed -i -e '/open_basedir/s/.*/#deleted#/' ${XPANEL}data/templates/web/apache2/default.tpl
+#deactivate 'open_basedir' line from the 'default' template (more secure using additional openbasedir rule)
+#sed -i -e '/open_basedir/s/.*/#deleted#/' ${XPANEL}data/templates/web/apache2/default.stpl
+#sed -i -e '/open_basedir/s/.*/#deleted#/' ${XPANEL}data/templates/web/apache2/default.tpl
+
+#additional open_basedir rule
+if [ $vApacheOpenBasedir == "y" ] || [ $vApacheOpenBasedir == "Y" ]; then
+  sed -i -e '/open_basedir/ s/$/:'"$vApacheOpenBasedirRule"'/' ${XPANEL}data/templates/web/apache2/default.stpl
+  sed -i -e '/open_basedir/ s/$/:'"$vApacheOpenBasedirRule"'/' ${XPANEL}data/templates/web/apache2/default.tpl
+fi
 
 
 #----------------------------------------------------------#
