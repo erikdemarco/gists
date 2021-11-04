@@ -103,7 +103,7 @@ fi
 #additional open_basedir rule
 read -r -p "Do you want to add additional directory to apache's open_basedir? [y/N] " vApacheOpenBasedir
 if [ $vApacheOpenBasedir == "y" ] || [ $vApacheOpenBasedir == "Y" ]; then
-  read -r -p "Please input your additional directory, separated by semicolon, do not add any quote, slash must be escaped (EXAMPLE: '%home%\/%user%\/dir1:%home%\/%user%\/dir2'): " vApacheOpenBasedirRule
+  read -r -p "Please input your additional directory, separated by semicolon, do not add any quote, slash must be escaped (EXAMPLE: '\/home\/%user%\/dir1:\/home\/%user%\/dir2'): " vApacheOpenBasedirRule
 fi
 
 vAddString="-r $vPort -s $vHostname -e $vEmail -p $vPassword"
@@ -240,6 +240,7 @@ greentext "fixing template bug..."
 if [ $vApacheOpenBasedir == "y" ] || [ $vApacheOpenBasedir == "Y" ]; then
   sed -i -e '/open_basedir/ s/$/:'"$vApacheOpenBasedirRule"'/' ${XPANEL}data/templates/web/apache2/default.stpl
   sed -i -e '/open_basedir/ s/$/:'"$vApacheOpenBasedirRule"'/' ${XPANEL}data/templates/web/apache2/default.tpl
+  sed -i -e '/open_basedir/ s/$/:'"$vApacheOpenBasedirRule"'/' ${XPANEL}data/templates/web/php-fpm/default.tpl
 fi
 
 
