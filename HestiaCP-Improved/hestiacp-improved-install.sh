@@ -995,10 +995,9 @@ if [ $vProtectAdminPanel == "y" ] || [ $vProtectAdminPanel == "Y" ]; then
     service fail2ban restart 
 
     #phpmyadmin
-    sed -i -e '/<Directory \/usr\/share\/phpmyadmin>/a AllowOverride All' /etc/phpmyadmin/apache.conf
-    echo '<RequireAll>
+    echo '<Directory /usr/share/phpmyadmin>
     Require local
-    </RequireAll>' > /usr/share/phpmyadmin/.htaccess
+</Directory>' >> /etc/apache2/conf.d/phpmyadmin.conf
     service apache2 restart
 
 
