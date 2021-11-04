@@ -819,6 +819,8 @@ sudo systemctl restart nginx
 
 # Notes:
 # -) This will make any domain which enabled dns, will resolve internally. Resulting much better performance when dealing with internal domain
+# -) Named require ~250mb of memory
+# -) Based on our recent internat testing, ts not differ much in term of speed between using named or not
 
 # Alternative:
 # -) editing '/etc/hosts' will fail. Because php/curl ignore this file
@@ -835,6 +837,7 @@ sudo systemctl restart nginx
 # -) https://www.shells.com/l/en-US/tutorial/Install-a-local-DNS-resolver-on-Ubuntu-20-04
 # -) https://unix.stackexchange.com/a/527581
  
+
 # Check if named is installed
 if ! [ -x "$(command -v named)" ]; then
     is_named_installed='no'
@@ -843,54 +846,57 @@ else
 fi
 
 
-# add localhost as first priority of dns resolver, bail if its already set
-grepc=$(grep -c '^DNS=' /etc/systemd/resolved.conf)
-if [ "$is_named_installed" == "yes" ] && [ "$grepc" -eq 0 ]; then
-    sed -i -e 's/^DNS=.*/#DNS=/' /etc/systemd/resolved.conf
-    echo 'DNS=127.0.0.1' >> /etc/systemd/resolved.conf
-    sudo systemctl restart systemd-resolved
-fi
-
-# make dns can only be accessed from localhost
 if [ "$is_named_installed" == "yes" ]; then
 
+
+    # add localhost as first priority of dns resolver, bail if its already set
+    grepc=$(grep -c '^DNS=' /etc/systemd/resolved.conf)
+    if [ "$grepc" -eq 0 ]; then
+        sed -i -e 's/^DNS=.*/#DNS=/' /etc/systemd/resolved.conf
+        echo 'DNS=127.0.0.1' >> /etc/systemd/resolved.conf
+        sudo systemctl restart systemd-resolved
+    fi
+
+
+    # make dns can only be accessed from localhost
     #add rule
     sed  -i -e "/'53'/ s|0.0.0.0/0|127.0.0.1|" ${XPANEL}data/firewall/rules.conf
-
     #update firewall then restart hestia
     ${XPANEL}bin/v-update-firewall
     service $xpanelname restart
+    
 
-fi
-
-# Check if systemd-resolved (check resolvectl) is installed
-if ! [ -x "$(command -v resolvectl)" ]; then
-    is_resolvectl_installed='no'
-else
-    is_resolvectl_installed='yes'
-fi
-
-#check if we use localhost for dns
-if [ "$is_resolvectl_installed" == "yes" ]; then
-
-    grepc=$(resolvectl status | grep -c '127.0.0.1')
-    if [ "$grepc" -eq 0 ]; then
-        echo 'Not using localhost as DNS'
-	redtext "Not using localhost as DNS, All local domain will be resolved using external DNS resulting poor performance!"
+    # Check if systemd-resolved (check resolvectl) is installed
+    if ! [ -x "$(command -v resolvectl)" ]; then
+        is_resolvectl_installed='no'
+    else
+        is_resolvectl_installed='yes'
     fi
 
-fi
 
-# add monit 'named' config, note: the correct is '/var/run/named/named.pid' not '/var/run/named.pid' if not correct it will cause failed start
-if [ "$is_named_installed" == "yes" ]; then
-	echo 'check process named with pidfile /var/run/named/named.pid
-	    start program = "/etc/init.d/named start"
-	    stop program  = "/etc/init.d/named stop"
-	    if failed port 53 type tcp protocol dns then restart
-	    if failed port 53 type udp protocol dns then restart
-	    if 5 restarts within 5 cycles then timeout' >> /etc/monit/conf.d/custom.conf
-	sudo service monit restart
-	sudo monit start all
+    #check if we use localhost for dns
+    if [ "$is_resolvectl_installed" == "yes" ]; then
+
+        grepc=$(resolvectl status | grep -c '127.0.0.1')
+        if [ "$grepc" -eq 0 ]; then
+            echo 'Not using localhost as DNS'
+        redtext "Not using localhost as DNS, All local domain will be resolved using external DNS resulting poor performance!"
+        fi
+
+    fi
+
+
+    # add monit 'named' config, note: the correct is '/var/run/named/named.pid' not '/var/run/named.pid' if not correct it will cause failed start
+    echo 'check process named with pidfile /var/run/named/named.pid
+        start program = "/etc/init.d/named start"
+        stop program  = "/etc/init.d/named stop"
+        if failed port 53 type tcp protocol dns then restart
+        if failed port 53 type udp protocol dns then restart
+        if 5 restarts within 5 cycles then timeout' >> /etc/monit/conf.d/custom.conf
+    sudo service monit restart
+    sudo monit start all
+
+
 fi
 
 
