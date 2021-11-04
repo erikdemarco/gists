@@ -1005,7 +1005,9 @@ if [ $vProtectAdminPanel == "y" ] || [ $vProtectAdminPanel == "Y" ]; then
     service fail2ban restart 
 
     #phpmyadmin
-    echo '<Directory /usr/share/phpmyadmin>
+    #note: must start with newline if not it will complain"<Directory> directive missing closing '>'"
+    echo '
+<Directory /usr/share/phpmyadmin>
     Require local
 </Directory>' >> /etc/apache2/conf.d/phpmyadmin.conf
     service apache2 restart
