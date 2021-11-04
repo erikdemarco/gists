@@ -417,7 +417,8 @@ for pconf in $(find /etc/php* -name php.ini); do
     #inspired from https://www.hostgator.com/help/article/php-settings-that-cannot-be-changed
 
     #Disable php dangerous functions
-    sed -i -e 's/disable_functions =/disable_functions = exec,passthru,shell_exec,system/g' $pconf
+    #https://www.acunetix.com/blog/articles/detection-prevention-introduction-web-shells-part-5/
+    sed -i -e 's/disable_functions =/disable_functions = exec,passthru,shell_exec,system,eval,show_source,pcntl_exec,proc_open/g' $pconf
 
     #increase post_max_size
     sed -i -e '/post_max_size/s/.*/post_max_size = 64M/' $pconf
