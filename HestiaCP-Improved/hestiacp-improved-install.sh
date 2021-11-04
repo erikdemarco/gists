@@ -103,7 +103,7 @@ fi
 #additional open_basedir rule
 read -r -p "Do you want to add additional directory to apache's open_basedir? [y/N] " vApacheOpenBasedir
 if [ $vApacheOpenBasedir == "y" ] || [ $vApacheOpenBasedir == "Y" ]; then
-  read -r -p "Please input your additional directory, separated by semicolon, do not add any quote (EXAMPLE: '/home/user1/dir1:/home/user1/dir2'): " vApacheOpenBasedirRule
+  read -r -p "Please input your additional directory, separated by semicolon, do not add any quote, slash must be escaped (EXAMPLE: '%home%\/%user%\/dir1:%home%\/%user%\/dir2'): " vApacheOpenBasedirRule
 fi
 
 vAddString="-r $vPort -s $vHostname -e $vEmail -p $vPassword"
