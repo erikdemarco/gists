@@ -14,8 +14,6 @@ fi
 
 if [ $vDropboxUploader == "y" ] || [ $vDropboxUploader == "Y" ]; then
   ##Automate backup to dropbox (START)
-  
-  greentext "installing dropbox backup..."
 
   #get the dropbox uploader api
   cd /  #cd to main dir
