@@ -95,9 +95,17 @@ fi
 
 read -r -p "Do you want to make admin panel, mysql, and phpmyadmin accesible to localhost only (you can still access admin panel using SSH tunnel)? [y/N] " vProtectAdminPanel
 
-read -r -p "Do you want to automated backup to dropbox weekly? (needs dropbox access token) [y/N] " vDropboxUploader
+
+#dropbox backup
+read -r -p "Do you want to automated backup to dropbox daily? (needs app key, app secret, access code. to get this information try running 'andreafabrizi/Dropbox-Uploader' from other machine ) [y/N] " vDropboxUploader
 if [ $vDropboxUploader == "y" ] || [ $vDropboxUploader == "Y" ]; then
-  read -r -p "Please input your dropbox Generated access token: " vDropboxUploaderKey
+  read -r -p "Please input your dropbox Generated app key: " vDropboxUploaderAppKey
+fi
+if [ $vDropboxUploader == "y" ] || [ $vDropboxUploader == "Y" ]; then
+  read -r -p "Please input your dropbox Generated app secret: " vDropboxUploaderAppSecret
+fi
+if [ $vDropboxUploader == "y" ] || [ $vDropboxUploader == "Y" ]; then
+  read -r -p "Please input your dropbox Generated access token: " vDropboxUploaderAccessToken
 fi
 
 #additional open_basedir rule
@@ -1042,7 +1050,9 @@ if [ $vDropboxUploader == "y" ] || [ $vDropboxUploader == "Y" ]; then
   cd dropbox
   curl "https://raw.githubusercontent.com/andreafabrizi/Dropbox-Uploader/master/dropbox_uploader.sh" -o dropbox_uploader.sh
   chmod 755 dropbox_uploader.sh
-  echo "$vDropboxUploaderKey
+  echo "$vDropboxUploaderAppKey
+  $vDropboxUploaderAppSecret
+  $vDropboxUploaderAccessToken
   y" | ./dropbox_uploader.sh
 
   #download the cron file (vestacp)
