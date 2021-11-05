@@ -264,7 +264,7 @@ httpd_optimized_setting="\n
 \nServerTokens Prod
 \n
 \n#fix Could not reliably determine the server's fully qualified domain name
-\nServerName localhost
+\n#ServerName localhost
 \n
 \n#OPTIMIZED APACHE Setting#
 \n"
