@@ -251,6 +251,10 @@ fi
 #                   optimize httpd                         #
 #----------------------------------------------------------#
 
+#fix for 'Could not reliably determine the server's fully qualified domain name' (#2215)
+#https://askubuntu.com/a/256018
+#https://help.ubuntu.com/community/ApacheMySQLPHP#Troubleshooting_Apache
+
 greentext "optimizing httpd..."
 
 httpd_optimized_setting="\n
@@ -259,6 +263,9 @@ httpd_optimized_setting="\n
 \n#hide apache version
 \nServerSignature Off
 \nServerTokens Prod
+\n
+\n#fix Could not reliably determine the server's fully qualified domain name
+\nServerName localhost
 \n
 \n#OPTIMIZED APACHE Setting#
 \n"
