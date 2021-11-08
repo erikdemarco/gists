@@ -1,2 +1,3 @@
 -) remove apache completely
 -) nginx tuning by using keepalive
+-) 1 year testing. check maldet log, does it catch anything. if not maybe we dont need maldet
