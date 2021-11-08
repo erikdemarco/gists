@@ -1069,6 +1069,7 @@ greentext "disabling shell login for admin..."
 ${XPANEL}bin/v-change-user-shell admin nologin
 
 #prevent sftp access
+greentext "disabling sftp login for admin..."
 echo '
 Match User admin
 MaxSessions 0
