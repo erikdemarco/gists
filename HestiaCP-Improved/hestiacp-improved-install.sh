@@ -1026,7 +1026,7 @@ if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
     sed -i -e '/quarantine_hits/s/.*/quarantine_hits="1"/' /usr/local/maldetect/conf.maldet
 
     # add monit 'maldet' config
-    echo 'check program maldet with path "systemctl --quiet is-active maldet"
+    echo 'check program maldet with path "/bin/systemctl --quiet is-active maldet"
         start program = "/bin/systemctl start maldet.service" with timeout 60 seconds
         stop program = "/bin/systemctl stop maldet.service"
         if status != 0 then restart' >> /etc/monit/conf.d/custom.conf
