@@ -1056,12 +1056,18 @@ fi
 
 
 #----------------------------------------------------------#
-#               Disable shell login for admin              #
+#           Disable shell & sftp login for admin           #
 #----------------------------------------------------------#
 
+#prevent ssh access
 greentext "disabling shell login for admin..."
 ${XPANEL}bin/v-change-user-shell admin nologin
 
+#prevent sftp access
+echo '
+Match User admin
+MaxSessions 0
+' >> /etc/ssh/sshd_config
 
 
 #----------------------------------------------------------#
