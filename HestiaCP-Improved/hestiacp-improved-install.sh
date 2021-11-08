@@ -354,7 +354,22 @@ chmod +x /usr/local/bin/check-iptables-status.sh    #make 'check-iptables-status
 echo "check program check-iptables-status with path /usr/local/bin/check-iptables-status.sh
       if status != 1 then exec '${XPANEL}bin/v-update-firewall'" >> /etc/monit/conf.d/custom.conf  #add monit rule
       
-      
+
+#phpfpm
+phpversion_short="$(php -r 'echo PHP_MAJOR_VERSION;').$(php -r 'echo PHP_MINOR_VERSION;')" 
+commandname='php-fpm'"${phpversion_short}"''
+if ! [ -x "$(command -v ${commandname})" ]; then
+    is_phpfpm_installed='no'
+else
+    is_phpfpm_installed='yes'
+fi
+if [ "$is_phpfpm_installed" == "yes" ]; then
+    echo 'check process php-fpm with pidfile /var/run/php/php'"${phpversion_short}"'-fpm.pid
+        start program = "/bin/systemctl start php'"${phpversion_short}"'-fpm"
+        stop program = "/bin/systemctl stop php'"${phpversion_short}"'-fpm"
+        if failed port 9000 type TCP then restart' >> /etc/monit/conf.d/custom.conf
+fi
+
    
 sudo service monit restart
 sudo monit start all
