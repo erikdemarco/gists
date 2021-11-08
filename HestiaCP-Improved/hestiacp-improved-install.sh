@@ -1027,6 +1027,7 @@ if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
 
     #maldet realtime monitoring (dont forget to install inotify-tools)
     #maybe its better to disable realtime monitoring, it will give hacker reason to try upload other type of backdoors/malware
+    #todo:check if this run automatically after reboot, https://www.woktron.com/secure/knowledgebase/145/Installation-Linux-Malware-Detect-Maldet-On-CentOS.html
     vMaldetMonitoring='no'
     if [ $vMaldetMonitoring == "yes" ]; then
     
