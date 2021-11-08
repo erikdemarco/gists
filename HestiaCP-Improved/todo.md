@@ -1,3 +1,2 @@
 -) remove apache completely
 -) nginx tuning by using keepalive
--) apply restricted shell for main user account. waiting for feature #894 to be implemented
