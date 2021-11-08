@@ -1048,8 +1048,8 @@ if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
         fi
         ' > /usr/local/bin/check-maldet-monitoring-status.sh  #create 'check-maldet-monitoring-status.sh' program
         chmod +x /usr/local/bin/check-maldet-monitoring-status.sh    #make 'check-maldet-monitoring-status.sh' executeable
-        echo "check program check-maldet-monitoring-status with path /usr/local/bin/check-maldet-monitoring-status.sh
-            if status != 1 then exec '/usr/local/maldetect/maldet --monitor /home'" >> /etc/monit/conf.d/custom.conf  #add monit rule to activate maldet-monitor for '/home' dir
+        echo 'check program check-maldet-monitoring-status with path /usr/local/bin/check-maldet-monitoring-status.sh
+            if status != 1 then exec "/usr/local/maldetect/maldet --monitor /home"' >> /etc/monit/conf.d/custom.conf  #add monit rule to activate maldet-monitor for '/home' dir, exec with argument must be enclosed with double quote
         sudo service monit restart
         sudo monit start all
     
