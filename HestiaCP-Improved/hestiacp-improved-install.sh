@@ -1018,28 +1018,38 @@ if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
         ' >> /usr/local/maldetect/cron/custom.cron
 	
     fi
-
+    
     #maldet custom config
     sed -i -e '/cron_prune_days/s/.*/cron_prune_days="30"/' /usr/local/maldetect/conf.maldet
     sed -i -e '/scan_clamscan/s/.*/scan_clamscan="0"/' /usr/local/maldetect/conf.maldet
     sed -i -e '/scan_find_timeout/s/.*/scan_find_timeout="14400"/' /usr/local/maldetect/conf.maldet
     sed -i -e '/quarantine_hits/s/.*/quarantine_hits="1"/' /usr/local/maldetect/conf.maldet
 
-    # add monit 'maldet' config (only needed if maldet-monitor is activated) (dont forget to install inotify-tools)
-    #inspired from 'existing inotify process detected'
-    echo '#!/bin/sh
-    inotify_pid=`pgrep -f inotify.paths.[0-9]+`
-    if [ ! -z "$inotify_pid" ]; then
-        exit 1 #already exist (good)
-    else
-        exit 0 #not exist (do something)
+    #maldet realtime monitoring (dont forget to install inotify-tools)
+    vMaldetMonitoring='no'
+    if [ $vMaldetMonitoring == "yes" ]; then
+    
+        #install inotify-tools
+        sudo apt-get install inotify-tools
+
+        # add monit 'maldet' config (only needed if maldet-monitor is activated, if monitoring is not activated, we dont need monit for maldet) 
+        #inspired from 'existing inotify process detected'
+        echo '#!/bin/sh
+        inotify_pid=`pgrep -f inotify.paths.[0-9]+`
+        if [ ! -z "$inotify_pid" ]; then
+            exit 1 #already exist (good)
+        else
+            exit 0 #not exist (do something)
+        fi
+        ' > /usr/local/bin/check-maldet-monitoring-status.sh  #create 'check-maldet-monitoring-status.sh' program
+        chmod +x /usr/local/bin/check-maldet-monitoring-status.sh    #make 'check-maldet-monitoring-status.sh' executeable
+        echo "check program check-maldet-monitoring-status with path /usr/local/bin/check-maldet-monitoring-status.sh
+            if status != 1 then exec '/usr/local/maldetect/maldet --monitor /home'" >> /etc/monit/conf.d/custom.conf  #add monit rule to activate maldet-monitor for '/home' dir
+        sudo service monit restart
+        sudo monit start all
+    
     fi
-    ' > /usr/local/bin/check-maldet-monitoring-status.sh  #create 'check-maldet-monitoring-status.sh' program
-    chmod +x /usr/local/bin/check-maldet-monitoring-status.sh    #make 'check-maldet-monitoring-status.sh' executeable
-    echo "check program check-maldet-monitoring-status with path /usr/local/bin/check-maldet-monitoring-status.sh
-        if status != 1 then exec '/usr/local/maldetect/maldet --monitor /home'" >> /etc/monit/conf.d/custom.conf  #add monit rule to activate maldet-monitor for '/home' dir
-    sudo service monit restart
-    sudo monit start all
+
 
 fi
 
