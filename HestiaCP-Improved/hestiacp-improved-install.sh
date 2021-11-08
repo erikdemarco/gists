@@ -1032,7 +1032,7 @@ if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
     if [ $vMaldetMonitoring == "yes" ]; then
     
         #install inotify-tools
-        sudo apt-get install inotify-tools
+	sudo apt install -y inotify-tools
 	
 	#start monitoring /home
 	/usr/local/maldetect/maldet --monitor /home
