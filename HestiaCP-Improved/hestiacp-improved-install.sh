@@ -1025,12 +1025,19 @@ if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
     sed -i -e '/scan_find_timeout/s/.*/scan_find_timeout="14400"/' /usr/local/maldetect/conf.maldet
     sed -i -e '/quarantine_hits/s/.*/quarantine_hits="1"/' /usr/local/maldetect/conf.maldet
 
-    # add monit 'maldet' config
-    # this only needed if maldet monitoring is enabled, (it require inotify-tools)
-    echo 'check program maldet with path "/bin/systemctl --quiet is-active maldet"
-        start program = "/bin/systemctl start maldet.service" with timeout 60 seconds
-        stop program = "/bin/systemctl stop maldet.service"
-        if status != 0 then restart' >> /etc/monit/conf.d/custom.conf
+    # add monit 'maldet' config (only needed if maldet-monitor is activated) (dont forget to install inotify-tools)
+    #inspired from 'existing inotify process detected'
+    echo '#!/bin/sh
+    inotify_pid=`pgrep -f inotify.paths.[0-9]+`
+    if [ ! -z "$inotify_pid" ]; then
+        exit 1 #already exist (good)
+    else
+        exit 0 #not exist (do something)
+    fi
+    ' > /usr/local/bin/check-maldet-monitoring-status.sh  #create 'check-maldet-monitoring-status.sh' program
+    chmod +x /usr/local/bin/check-maldet-monitoring-status.sh    #make 'check-maldet-monitoring-status.sh' executeable
+    echo "check program check-maldet-monitoring-status with path /usr/local/bin/check-maldet-monitoring-status.sh
+        if status != 1 then exec '/usr/local/maldetect/maldet --monitor /home'" >> /etc/monit/conf.d/custom.conf  #add monit rule to activate maldet-monitor for '/home' dir
     sudo service monit restart
     sudo monit start all
 
