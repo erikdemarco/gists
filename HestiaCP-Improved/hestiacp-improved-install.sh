@@ -64,6 +64,8 @@ read -r -p "Please type timezone of your server (example: Asia/Jakarta) or press
 
 #additional app
 read -r -p "Do you want to add local redis-server? [y/N] " vAddRedisServer
+read -r -p "Do you want to add maldet(to do daily scan of backdoor and other malware in home directory)? [y/N] " vAddMaldet
+
 
 read -r -p "Do you want to add SSH Key? [y/N] 
 (if you don't have ssh key, you can generate it yourself using using tool like PuTTYgen) " vAddSsh
@@ -964,6 +966,55 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
         stop program = "/bin/systemctl stop redis-server"
         if failed port 6379 protocol redis then restart
         if 5 restarts within 5 cycles then timeout' >> /etc/monit/conf.d/custom.conf
+    sudo service monit restart
+    sudo monit start all
+
+fi
+
+
+
+#----------------------------------------------------------#
+#         Install additional app: maldet            	   #
+#----------------------------------------------------------#
+
+#links:
+#https://dade2.net/kb/how-to-install-and-configuration-maldet-and-run-a-scan/
+#https://www.linuxcapable.com/how-to-install-linux-malware-detect-maldet-on-fedora-34/
+
+#note:
+#will auto add cron to sysntem to scan daily, no need to add manually
+#inotify monitoring not working as of ubuntu 20.04 (tested)
+
+if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
+
+    #maldet start installation process
+    cd /tmp/ && curl -O http://www.rfxn.com/downloads/maldetect-current.tar.gz
+    tar xfz maldetect-current.tar.gz
+    rm maldetect-current.tar.gz
+    cd maldetect-*
+    ./install.sh
+
+    #check if hestiacp is not supported
+    if ! grep -q 'hestia' '/etc/cron.daily/maldet'; then
+    
+        #add additional job to maldet's custom.cron
+        echo '
+        /usr/local/maldetect/maldet -b -r /home/?/web/?/public_html/,/home/?/web/?/public_shtml/,/home/?/tmp/,/home/?/web/?/private/ 1 >> /dev/null 2>&1
+        ' >> /usr/local/maldetect/cron/custom.cron
+	
+    fi
+
+    #maldet custom config
+    sed -i -e '/cron_prune_days/s/.*/cron_prune_days="30"/' /usr/local/maldetect/conf.maldet
+    sed -i -e '/scan_clamscan/s/.*/scan_clamscan="0"/' /usr/local/maldetect/conf.maldet
+    sed -i -e '/scan_find_timeout/s/.*/scan_find_timeout="14400"/' /usr/local/maldetect/conf.maldet
+    sed -i -e '/quarantine_hits/s/.*/quarantine_hits="1"/' /usr/local/maldetect/conf.maldet
+
+    # add monit 'maldet' config
+    echo 'check program maldet with path "systemctl --quiet is-active maldet"
+        start program = "/bin/systemctl start maldet.service" with timeout 60 seconds
+        stop program = "/bin/systemctl stop maldet.service"
+        if status != 0 then restart' >> /etc/monit/conf.d/custom.conf
     sudo service monit restart
     sudo monit start all
 
