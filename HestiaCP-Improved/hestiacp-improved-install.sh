@@ -1026,11 +1026,15 @@ if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
     sed -i -e '/quarantine_hits/s/.*/quarantine_hits="1"/' /usr/local/maldetect/conf.maldet
 
     #maldet realtime monitoring (dont forget to install inotify-tools)
+    #maybe its better to disable realtime monitoring, it will give hacker reason to try upload other type of backdoors/malware
     vMaldetMonitoring='no'
     if [ $vMaldetMonitoring == "yes" ]; then
     
         #install inotify-tools
         sudo apt-get install inotify-tools
+	
+	#start monitoring /home
+	/usr/local/maldetect/maldet --monitor /home
 
         # add monit 'maldet' config (only needed if maldet-monitor is activated, if monitoring is not activated, we dont need monit for maldet) 
         #inspired from 'existing inotify process detected'
