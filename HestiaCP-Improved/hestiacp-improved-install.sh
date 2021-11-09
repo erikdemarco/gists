@@ -1020,10 +1020,10 @@ if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
     fi
     
     #maldet custom config
-    sed -i -e '/cron_prune_days/s/.*/cron_prune_days="30"/' /usr/local/maldetect/conf.maldet
-    sed -i -e '/scan_clamscan/s/.*/scan_clamscan="0"/' /usr/local/maldetect/conf.maldet
-    sed -i -e '/scan_find_timeout/s/.*/scan_find_timeout="14400"/' /usr/local/maldetect/conf.maldet
-    sed -i -e '/quarantine_hits/s/.*/quarantine_hits="1"/' /usr/local/maldetect/conf.maldet
+    sed -i -e 's/^cron_prune_days=.*/cron_prune_days="30"/' /usr/local/maldetect/conf.maldet
+    sed -i -e 's/^scan_clamscan=.*/scan_clamscan="0"/' /usr/local/maldetect/conf.maldet
+    sed -i -e 's/^scan_find_timeout=.*/scan_find_timeout="14400"/' /usr/local/maldetect/conf.maldet
+    sed -i -e 's/^quarantine_hits=.*/quarantine_hits="1"/' /usr/local/maldetect/conf.maldet
 
     #maldet realtime monitoring (dont forget to install inotify-tools)
     #maybe its better to disable realtime monitoring, it will give hacker reason to try upload other type of backdoors/malware
