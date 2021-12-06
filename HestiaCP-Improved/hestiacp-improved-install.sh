@@ -442,8 +442,8 @@ for pconf in $(find /etc/php* -name php.ini); do
     #Disable php dangerous functions
     #https://www.acunetix.com/blog/articles/detection-prevention-introduction-web-shells-part-5/
     #eval is not a function, so you cant disable it
-    #sed -i -e 's/disable_functions =/disable_functions = exec,passthru,shell_exec,system,eval,show_source,pcntl_exec,proc_open,/g' $pconf
-    sed -i -e '/disable_functions/s/.*/disable_functions = exec,passthru,shell_exec,system,eval,show_source,proc_open,pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wifcontinued,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_get_handler,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,pcntl_async_signals,pcntl_unshare/' $pconf
+    #sed -i -e 's/disable_functions =/disable_functions = exec,passthru,shell_exec,system,show_source,pcntl_exec,proc_open,/g' $pconf
+    sed -i -e '/disable_functions/s/.*/disable_functions = exec,passthru,shell_exec,system,show_source,proc_open,pcntl_alarm,pcntl_fork,pcntl_waitpid,pcntl_wait,pcntl_wifexited,pcntl_wifstopped,pcntl_wifsignaled,pcntl_wifcontinued,pcntl_wexitstatus,pcntl_wtermsig,pcntl_wstopsig,pcntl_signal,pcntl_signal_get_handler,pcntl_signal_dispatch,pcntl_get_last_error,pcntl_strerror,pcntl_sigprocmask,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_exec,pcntl_getpriority,pcntl_setpriority,pcntl_async_signals,pcntl_unshare/' $pconf
 
     #increase post_max_size
     sed -i -e '/post_max_size/s/.*/post_max_size = 64M/' $pconf
