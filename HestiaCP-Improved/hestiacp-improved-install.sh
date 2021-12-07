@@ -39,6 +39,19 @@ gen_pass() {
     head /dev/urandom | tr -dc A-Za-z0-9 | head -c 16
 }
 
+# Defining fqdn-gen function
+gen_random_fqdn() {
+    randomname1_length=$(head /dev/urandom | tr -dc 3-9 | head -c 1)
+    randomname1_string=$(head /dev/urandom | tr -dc a-z | head -c $randomname1_length)
+    randomname2_length=$(head /dev/urandom | tr -dc 3-9 | head -c 1)
+    randomname2_string=$(head /dev/urandom | tr -dc a-z | head -c $randomname2_length)
+    randomname3_length=$(head /dev/urandom | tr -dc 2-9 | head -c 1)
+    randomname3_string=$(head /dev/urandom | tr -dc a-z | head -c $randomname3_length)
+    random_fqdn="${randomname1_string}.${randomname2_string}.${randomname3_string}"
+    echo $random_fqdn
+}
+
+
 #----------------------------------------------------------#
 #                   settings                               #
 #----------------------------------------------------------#
@@ -57,10 +70,17 @@ check_result() {
 
 
 read -r -p "What e-mail address would you like to receive alerts to? " vEmail
-read -r -p "Please type your server hostname, or press enter to use default: " vHostname
 read -r -p "Which port do you want the panel can be accessed from? or press enter to use default: " vPort
 read -r -p "Please type a password to use or press enter to generate it automatically: " vPassword
 read -r -p "Please type timezone of your server (example: Asia/Jakarta) or press enter to use default: " vTimezone
+
+#hostname
+read -r -p "Do you want to use random fqdn as your server hostname? Its safer to use random fqdn so hacker can't search your server's ip via censys" vRandomHostname
+if [ $vAddSsh == "n" ] || [ $vAddSsh == "N" ]; then
+  read -r -p "Please type your server hostname, or press enter to use default: " vHostname
+else
+  vHostname=$(gen_random_fqdn)
+fi
 
 #additional app
 read -r -p "Do you want to add local redis-server? [y/N] " vAddRedisServer
@@ -70,10 +90,10 @@ read -r -p "Do you want to add maldet(to do daily scan of backdoor and other mal
 read -r -p "Do you want to add SSH Key? [y/N] 
 (if you don't have ssh key, you can generate it yourself using using tool like PuTTYgen) " vAddSsh
 
+
 if [ -z "$vHostname" ]; then
 	vHostname=$(hostname -f)
 fi
-
 
 #(use port that supported by cloudflare, so if you use cloudflare, you dont need to issue letsencrypt cert: https://support.cloudflare.com/hc/en-us/articles/200169156-Which-ports-will-CloudFlare-work-with-)
 if [ -z "$vPort" ]
