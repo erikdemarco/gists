@@ -422,12 +422,13 @@ if [ $vAddSsh == "y" ] || [ $vAddSsh == "Y" ]; then
     chown -R $USER:$USER ~/.ssh
 
     #hardening ssh https://www.techrepublic.com/article/5-quick-ssh-hardening-tips/
+    #setting 'ClientAliveInterval' to low cause connection sometimes hang? so its better to set it to 86400 from previous value 300
     #TODO 2FA using google authenticator: https://medium.com/@jasonrigden/hardening-ssh-1bcb99cd4cef
     sed -i -e '/PermitRootLogin/s/.*/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
     sed -i -e '/PermitEmptyPasswords/s/.*/PermitEmptyPasswords no/' /etc/ssh/sshd_config
     sed -i -e '/MaxAuthTries/s/.*/MaxAuthTries 3/' /etc/ssh/sshd_config
     sed -i -e '/X11Forwarding/s/.*/X11Forwarding no/' /etc/ssh/sshd_config
-    sed -i -e '/ClientAliveInterval/s/.*/ClientAliveInterval 300/' /etc/ssh/sshd_config
+    sed -i -e '/ClientAliveInterval/s/.*/ClientAliveInterval 86400/' /etc/ssh/sshd_config
 
     #reload ssh
     systemctl reload sshd.service
