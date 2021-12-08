@@ -393,7 +393,7 @@ fi
 #known error: 'Cannot create socket to [localhost]:2812 -- Connection refused', after reboot it will not have this problem
 #https://serverfault.com/questions/242753/after-installing-monit-when-i-do-monit-status-myproc-i-get-error-connecting-to
 #${XPANEL}bin/v-add-firewall-rule ACCEPT 127.0.0.1 2812		#doesntwork
-sudo systemctl restart apache2 
+sudo systemctl restart apache2 	#testing
 
 #restart
 sudo service monit restart
