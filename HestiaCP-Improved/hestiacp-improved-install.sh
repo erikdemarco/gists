@@ -277,7 +277,7 @@ fi
 #https://help.ubuntu.com/community/ApacheMySQLPHP#Troubleshooting_Apache
 
 #KeepAlive should be turn on (apahach defaut), when we tested it with image downloading script its much more faster almost 10x
-#Timeout should be set to default 60secs or more, to prevent 'The timeout specified has expired' 
+#Timeout should be set to default 60secs or more, to prevent 'The timeout specified has expired'. dont worry it will use too many resources, php default time limit (30secs) will prevent it
 
 greentext "optimizing httpd..."
 
