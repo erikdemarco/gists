@@ -281,6 +281,12 @@ fi
 
 greentext "optimizing httpd..."
 
+#return to default settings
+sed -i -e '/^Timeout /s/.*/Timeout 60/' /etc/apache2/apache2.conf
+sed -i -e '/^KeepAlive /s/.*/KeepAlive On/' /etc/apache2/apache2.conf
+sed -i -e '/^KeepAliveTimeout /s/.*/KeepAliveTimeout 5/' /etc/apache2/apache2.conf
+sed -i -e '/^MaxKeepAliveRequests /s/.*/MaxKeepAliveRequests 100/' /etc/apache2/apache2.conf
+
 httpd_optimized_setting="\n
 \n#OPTIMIZED APACHE Setting#
 \n
