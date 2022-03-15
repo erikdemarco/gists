@@ -5,6 +5,10 @@ Notes:<br>
 -) 'proxy_extensions' location block should be outside '/' location block, if not it will also gets rate limited and break reguler browsing activity<br>
 -) For static files: DON'T pass to Apache if it's not found by nginx (try_files). Update: But from our testing with random jpg files. The responsetime is no difference even with fallback to apache little bit faster. weird
 
+NGINX limit setting inspirations:
+-) https://www.nginx.com/blog/enterprise-grade-cloud-storage-nginx-plus-minio/
+-) https://www.nginx.com/wp-content/uploads/2014/10/AWS_NGINX_Plus-whitepaper-final_v4.pdf
+
 Benchmark rank for static files:
 1. Fastest: #try_files      $uri @fallback;
 2. Medium: try_files      $uri =404;
