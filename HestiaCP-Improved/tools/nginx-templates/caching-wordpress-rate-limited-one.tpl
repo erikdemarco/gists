@@ -58,7 +58,7 @@ server {
 
     location / {
     
-        limit_req zone=req_limit_per_ip_one burst=10 nodelay;
+        limit_req zone=req_limit_per_ip_one burst=20 nodelay;
         proxy_pass      http://%ip%:%web_port%;
 
         # Tuning RPS (server block)
