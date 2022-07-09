@@ -91,7 +91,7 @@ server {
         proxy_pass      http://%ip%:%web_port%;
     }
 
-    location ~* ^.+\.(%proxy_extentions%)$ {
+    location ~* ^.+\.(%proxy_extensions%)$ {
         proxy_cache    off;
         root           %docroot%;
         access_log     off;
