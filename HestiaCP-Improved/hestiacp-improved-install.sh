@@ -981,6 +981,9 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
     #redis config: maxmemory-policy using lfu: https://redis.io/topics/lru-cache
     sed -i -e "s/^# maxmemory-policy .*/maxmemory-policy allkeys-lfu/" /etc/redis/redis.conf
 
+    #loglevel
+    sed -i -e "s/^loglevel .*/loglevel warning/" /etc/redis/redis.conf
+
     #redis config: its important to set timemut, because redis defualt is set to  0, meaning it will wait forever: https://blog.opstree.com/2019/04/16/redis-best-practices-and-performance-tuning/
     #we dont need this because we are protected by 'tcp-keepalive' setting. https://rtfm.co.ua/en/draft-eng-redis-main-configuration-parameters-and-performance-tuning-overview/
     #sed -i -e "s/^timeout 0.*/timeout 300/" /etc/redis/redis.conf
