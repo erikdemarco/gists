@@ -866,7 +866,7 @@ sudo systemctl restart nginx
 # proxy_cache_path /var/cache/nginx levels=1:2 keys_zone=cache:10m inactive=60m max_size=1024m;
 sed -i -e '/proxy_cache_use_stale /s/.*/    proxy_cache_use_stale  error timeout invalid_header updating http_500 http_502 http_503 http_504;/' /etc/nginx/nginx.conf
 sed -i -e 's/proxy_ignore_headers /#&/' /etc/nginx/nginx.conf
-sed -i -e '/proxy_cache_valid /s/.*/    proxy_cache_valid 200 1d;/' /etc/nginx/nginx.conf
+sed -i -e '/proxy_cache_valid /s/.*/    proxy_cache_valid 200 1h;/' /etc/nginx/nginx.conf
 
 # bugfix wordpress www to non-www redirect loop (proxy_cache_key / fastcgi_cache_key)
 # use '$host' instead of '$proxy_host', because if we use '$proxy_host' it will not differentiate the http_host, thus causing infinite loop
