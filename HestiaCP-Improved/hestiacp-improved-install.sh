@@ -869,6 +869,7 @@ sed -i -e 's/proxy_ignore_headers /#&/' /etc/nginx/nginx.conf
 sed -i -e '/proxy_cache_valid /s/.*/    proxy_cache_valid 200 1h;/' /etc/nginx/nginx.conf
 
 #add setting
+sed -i -e '/^worker_processes.*/a autoindex off;' /etc/nginx/nginx.conf
 sed -i -e '/^worker_processes.*/a worker_cpu_affinity auto;' /etc/nginx/nginx.conf
 
 # bugfix wordpress www to non-www redirect loop (proxy_cache_key / fastcgi_cache_key)
