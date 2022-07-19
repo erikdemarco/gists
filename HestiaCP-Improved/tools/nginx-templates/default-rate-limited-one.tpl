@@ -25,7 +25,7 @@ server {
         root           %docroot%;
         access_log     /var/log/%web_system%/domains/%domain%.log combined;
         access_log     /var/log/%web_system%/domains/%domain%.bytes bytes;
-        expires        max;
+        expires        30d;
         #try_files      $uri @fallback;
     }
 
