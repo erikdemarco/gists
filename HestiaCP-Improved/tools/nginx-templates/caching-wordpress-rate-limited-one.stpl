@@ -99,7 +99,7 @@ server {
         proxy_cache    off;
         root           %sdocroot%;
         access_log     off;
-        expires        max;
+        expires        30d;
         try_files      $uri @fallback;
     }
 
