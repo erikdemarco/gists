@@ -95,7 +95,7 @@ server {
         proxy_cache    off;
         root           %docroot%;
         access_log     off;
-        expires        max;
+        expires        30d;
         try_files      $uri @fallback;
     }
 
