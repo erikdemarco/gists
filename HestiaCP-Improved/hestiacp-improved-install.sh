@@ -827,34 +827,6 @@ sed -i -e "s/$word_to_find/$word_to_replace/g" ${XPANEL}web/js/pages/edit_web.js
 #restart nginx
 sudo systemctl restart nginx
 
-<<'###DEPRECATED'
-#----------------------------------------------------------#
-#      optimizing nginx (autoupdate cloudflare ips)        #
-#----------------------------------------------------------#
-
-#NOTE: implemented in hestia
-
-# Install cloudflare ips updater script
-curl -o ${XPANEL}bin/cloudflare-update-ip-ranges.sh https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/cloudflare-update-ip-ranges.sh
-chmod 755 ${XPANEL}bin/cloudflare-update-ip-ranges.sh
-${XPANEL}bin/cloudflare-update-ip-ranges.sh
-
-# Remove hestiacp cloudflare list, so we can use our list
-sed -i -e '/set_real_ip_from/d' /etc/nginx/nginx.conf
-sed -i -e '/real_ip_header/d' /etc/nginx/nginx.conf
-sed -i -e '/https:\/\/www.cloudflare.com\/ips/s/.*/    #Hestiacp cloudflare ips deleted#/' /etc/nginx/nginx.conf
-
-# Include the generated 'cloudflare-ips.conf' in nginx.conf
-sed -i -e '/\/etc\/nginx\/conf.d\/\*.conf/i\    include /etc/nginx/cloudflare-ips.conf;' /etc/nginx/nginx.conf
-
-# Add weekly cron to update 'cloudflare-ips.conf'
-${XPANEL}bin/v-add-cron-job admin '0' '4' '*' '*' '0'  "sudo ${XPANEL}bin/cloudflare-update-ip-ranges.sh"
-
-greentext "Added script to autoupdate cloudflare ips"
-
-#restart nginx
-sudo systemctl restart nginx
-###DEPRECATED
 
 #----------------------------------------------------------#
 #      		optimizing nginx (etc)        		   #
