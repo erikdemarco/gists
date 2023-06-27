@@ -119,7 +119,7 @@ read -r -p "Do you want to make admin panel, mysql, and phpmyadmin accesible to 
 
 
 #dropbox backup
-read -r -p "Do you want to automated backup to dropbox daily? ( make sure you already install dropbox-uploader. if not, install it using command 'curl -O https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/dropbox-uploader-install.sh && bash dropbox-uploader-install.sh' ) [y/N] " vDropboxUploader
+#read -r -p "Do you want to automated backup to dropbox daily? ( make sure you already install dropbox-uploader. if not, install it using command 'curl -O https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/dropbox-uploader-install.sh && bash dropbox-uploader-install.sh' ) [y/N] " vDropboxUploader
 
 #additional open_basedir rule
 read -r -p "Do you want to add additional directory to apache's open_basedir? [y/N] " vApacheOpenBasedir
