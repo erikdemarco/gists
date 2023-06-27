@@ -1203,7 +1203,7 @@ if [ -e "${XPANEL}web/fm" ]; then
 fi
 
 #disable quick app installer
-v-change-sys-config-value 'PLUGIN_APP_INSTALLER' 'false'
+${XPANEL}bin/v-change-sys-config-value 'PLUGIN_APP_INSTALLER' 'false'
 
 
 
