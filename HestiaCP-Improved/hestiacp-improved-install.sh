@@ -87,8 +87,13 @@ else
   vHostname=$(gen_random_fqdn)
 fi
 
-#additional app
+#redis
 read -r -p "Do you want to add local redis-server? [y/N] " vAddRedisServer
+if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
+  read -r -p "Starting redis 6 it is now require to add default password even accessed in protected mode. Please input your default password (remember if you put different value on old sites, all redis setting needs to be changed as well): " vRedisKey
+fi
+
+#additional app
 read -r -p "Do you want to add maldet(to do daily scan of backdoor and other malware in home directory)? [y/N] " vAddMaldet
 
 
@@ -961,6 +966,14 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
 
     #redis config: maxmemory-policy using lfu: https://redis.io/topics/lru-cache
     sed -i -e "s/^# maxmemory-policy .*/maxmemory-policy allkeys-lfu/" /etc/redis/redis.conf
+
+    #requirepass. Starting redis 6 it is now require to add default password even accessed in protected mode
+    if [ ! -z "$vRedisKey" ]; then
+        sed -i -e "s/^# requirepass .*/requirepass $vRedisKey/" /etc/redis/redis.conf
+        echo " ";
+        echo "Your redis default password is: $vRedisKey";
+        echo " ";
+    fi
 
     #loglevel
     sed -i -e "s/^loglevel .*/loglevel warning/" /etc/redis/redis.conf
