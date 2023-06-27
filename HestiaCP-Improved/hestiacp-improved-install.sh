@@ -1149,7 +1149,9 @@ fi
 #----------------------------------------------------------#
 
 
-
+if [ -z "$vDropboxUploader" ]; then
+	vDropboxUploader="n"
+fi
 if [ $vDropboxUploader == "y" ] || [ $vDropboxUploader == "Y" ]; then
   ##Automate backup to dropbox (START)
   
