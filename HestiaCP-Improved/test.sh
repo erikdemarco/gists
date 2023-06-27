@@ -17,6 +17,10 @@ sudo apt-get update
 #                   functions                              #
 #----------------------------------------------------------#
 
+#silent apt install
+apt_silent_install() {
+    sudo apt-get -y install $1 > /dev/null 2>&1
+}
 
 #text colors
 redtext() { echo "$(tput setaf 1)$*$(tput setaf 7)"; }
@@ -304,9 +308,7 @@ httpd_optimized_setting="\n
 echo -e $httpd_optimized_setting >> /etc/apache2/apache2.conf
 
 #restart apache 
-redtext "restart 111"
 sudo systemctl restart apache2 
-
 
 
 
@@ -319,7 +321,7 @@ sudo systemctl restart apache2
 
 greentext "installing monit"
 
-sudo apt install monit
+apt_silent_install monit
 
 #allow only localhost to access
 echo 'set httpd port 2812
@@ -404,11 +406,9 @@ fi
 #known error: 'Cannot create socket to [localhost]:2812 -- Connection refused', after reboot it will not have this problem
 #https://serverfault.com/questions/242753/after-installing-monit-when-i-do-monit-status-myproc-i-get-error-connecting-to
 #${XPANEL}bin/v-add-firewall-rule ACCEPT 127.0.0.1 2812		#doesntwork
-redtext "restart 222"
 sudo systemctl restart apache2 	#testing
 
 #restart
-redtext "restart 333"
 sudo service monit restart
 sudo monit start all
 
@@ -499,7 +499,6 @@ for pconf in $(find /etc/php* -name php.ini); do
 done
 
 #restart apache 
-redtext "restart 444"
 sudo systemctl restart apache2 
 
 
@@ -512,7 +511,7 @@ sudo systemctl restart apache2
 phpversion_short="$(php -r 'echo PHP_MAJOR_VERSION;').$(php -r 'echo PHP_MINOR_VERSION;')" #example:7.3
 
 #add bcmath
-sudo apt install php${phpversion_short}-bcmath
+apt_silent_install php${phpversion_short}-bcmath
 #addextension line to php.ini if its not yet activated automatically
 #sed -i -e '/extension=bz2/a extension=bcmath' /etc/php/${phpversion_short}/cli/php.ini		
 
@@ -525,17 +524,16 @@ done
 
 # php-redis
 # https://www.prowebtips.com/install-redis-and-php-redis-extension-on-ubuntu/
-sudo apt install -y php-redis	#is this needed?
-sudo apt install -y "php${phpversion_short}-redis"
+apt_silent_install php-redis	#is this needed?
+apt_silent_install "php${phpversion_short}-redis"
 
 
 #php soap
-sudo apt-get install php${phpversion_short}-soap
+apt_silent_install php${phpversion_short}-soap
 #addextension line to php.ini if its not yet activated automatically
 #sed -i -e '/extension=bz2/a extension=soap' /etc/php/${phpversion_short}/cli/php.ini		
 
 #restart apache 
-redtext "restart 555"
 sudo systemctl restart apache2 
 
 
@@ -558,7 +556,6 @@ sed -i -e '/read_rnd_buffer_size/s/^/#/' $mysql_config_file
 sed -i -e '/myisam_sort_buffer_size/s/^/#/' $mysql_config_file
 
 #restart mariadb 
-redtext "restart 666"
 sudo systemctl restart mariadb
 
 greentext "Reset some settings to default value"
@@ -643,7 +640,6 @@ sed -i -e '/\[mysqld\]/a max_user_connections = 0' $mysql_config_file
 #sed -i -e '/\[mysqld\]/a max_connections = 151' $mysql_config_file
 
 #restart mariadb 
-redtext "restart 777"
 sudo systemctl restart mariadb
 
 greentext "Calculate and apply the most optimied mysql settings"
@@ -673,7 +669,6 @@ sed -i -e '/interactive_timeout/s/.*/interactive_timeout = 100/' $mysql_config_f
 sed -i -e '/long_query_time/s/.*/long_query_time = 1/' $mysql_config_file
 
 #restart mariadb 
-redtext "restart 888"
 sudo systemctl restart mariadb
 
 greentext "Modified some mysql settings"
@@ -761,7 +756,6 @@ sed -i -e '/max_connections/s/.*//' $mysql_config_file
 sed -i -e "/\[mysqld\]/a max_connections = $max_connections" $mysql_config_file
 
 #restart mariadb 
-redtext "restart 000"
 sudo systemctl restart mariadb
 
 #if its even lower than 'my-small.cnf', maybe the calculation is wrong 
@@ -808,7 +802,6 @@ if [ "$rate_limit_zone_added" -eq 1 ]; then
 fi
 
 #restart nginx
-redtext "restart 122"
 sudo systemctl restart nginx
 
 
@@ -836,7 +829,6 @@ word_to_replace="select.val().includes('caching') == false"
 sed -i -e "s/$word_to_find/$word_to_replace/g" ${XPANEL}web/js/pages/edit_web.js
 
 #restart nginx
-redtext "restart 133"
 sudo systemctl restart nginx
 
 
@@ -866,7 +858,6 @@ sed -i -e '/^worker_processes.*/a worker_cpu_affinity auto;' /etc/nginx/nginx.co
 sed -i -e '/proxy_cache_key /s/.*/    proxy_cache_key "$scheme$request_method$host$request_uri";/' /etc/nginx/nginx.conf
 
 #restart nginx
-redtext "restart 144"
 sudo systemctl restart nginx
 
 #----------------------------------------------------------#
@@ -910,7 +901,6 @@ if [ "$is_named_installed" == "yes" ]; then
     if [ "$grepc" -eq 0 ]; then
         sed -i -e 's/^DNS=.*/#DNS=/' /etc/systemd/resolved.conf
         echo 'DNS=127.0.0.1' >> /etc/systemd/resolved.conf
-        redtext "restart 155"
         sudo systemctl restart systemd-resolved
     fi
 
@@ -920,7 +910,6 @@ if [ "$is_named_installed" == "yes" ]; then
     sed  -i -e "/'53'/ s|0.0.0.0/0|127.0.0.1|" ${XPANEL}data/firewall/rules.conf
     #update firewall then restart hestia
     ${XPANEL}bin/v-update-firewall
-    redtext "restart 166"
     service $xpanelname restart
     
 
@@ -951,7 +940,6 @@ if [ "$is_named_installed" == "yes" ]; then
         if failed port 53 type tcp protocol dns then restart
         if failed port 53 type udp protocol dns then restart
         if 5 restarts within 5 cycles then timeout' >> /etc/monit/conf.d/custom.conf
-        redtext "restart 177"
     sudo service monit restart
     sudo monit start all
 
@@ -968,7 +956,7 @@ fi
 if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
 
     #install redis (automatically make it accessable only from localhost)
-    sudo apt install -y redis-server
+    apt_silent_install redis-server
 
     #redis config: maxmemory-policy using lfu: https://redis.io/topics/lru-cache
     sed -i -e "s/^# maxmemory-policy .*/maxmemory-policy allkeys-lfu/" /etc/redis/redis.conf
@@ -1002,10 +990,9 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
     sysctl vm.overcommit_memory=1   #instant effect 
     echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf #persist after reboot
     echo madvise > /sys/kernel/mm/transparent_hugepage/enabled    #instant effect 
-    sudo apt install -y sysfsutils && echo 'kernel/mm/transparent_hugepage/enabled = madvise' >> /etc/sysfs.conf  #persist after reboot. we tried to use rc.local and crontab with no succes, maybe because redis start earlier than those. we use sysfs instead. https://askubuntu.com/questions/597372/how-do-i-modify-sys-kernel-mm-transparent-hugepage-enabled
+    apt_silent_install sysfsutils && echo 'kernel/mm/transparent_hugepage/enabled = madvise' >> /etc/sysfs.conf  #persist after reboot. we tried to use rc.local and crontab with no succes, maybe because redis start earlier than those. we use sysfs instead. https://askubuntu.com/questions/597372/how-do-i-modify-sys-kernel-mm-transparent-hugepage-enabled
 
     #restart redis
-    redtext "restart 188"
     sudo systemctl restart redis-server
     
     #check redis installation
@@ -1017,7 +1004,6 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
         stop program = "/bin/systemctl stop redis-server"
         if failed port 6379 protocol redis then restart
         if 5 restarts within 5 cycles then timeout' >> /etc/monit/conf.d/custom.conf
-        redtext "restart 199"
     sudo service monit restart
     sudo monit start all
 
@@ -1069,7 +1055,7 @@ if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
     if [ $vMaldetMonitoring == "yes" ]; then
     
         #install inotify-tools
-	sudo apt install -y inotify-tools
+	apt_silent_install inotify-tools
 	
 	#start monitoring /home
 	/usr/local/maldetect/maldet --monitor /home
@@ -1087,7 +1073,6 @@ if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
         chmod +x /usr/local/bin/check-maldet-monitoring-status.sh    #make 'check-maldet-monitoring-status.sh' executeable
         echo 'check program check-maldet-monitoring-status with path /usr/local/bin/check-maldet-monitoring-status.sh
             if status != 1 then exec "/usr/local/maldetect/maldet --monitor /home"' >> /etc/monit/conf.d/custom.conf  #add monit rule to activate maldet-monitor for '/home' dir, exec with argument must be enclosed with double quote
-        redtext "restart 211"
         sudo service monit restart
         sudo monit start all
     
@@ -1138,12 +1123,10 @@ if [ $vProtectAdminPanel == "y" ] || [ $vProtectAdminPanel == "Y" ]; then
 
     #update firewall then restart hestia
     ${XPANEL}bin/v-update-firewall
-    redtext "restart 222"
     service $xpanelname restart
 
     #fail2ban remove watching admin panel its useless because it can only be accessible from localhost
     sed -i -e '/\['"$xpanelname"'-iptables\]/!b;n;cenabled = false' /etc/fail2ban/jail.local  # ';n' change next 1line after match 
-    redtext "restart 233"
     service fail2ban restart 
 
     #phpmyadmin
@@ -1152,7 +1135,6 @@ if [ $vProtectAdminPanel == "y" ] || [ $vProtectAdminPanel == "Y" ]; then
 <Directory /usr/share/phpmyadmin>
     Require local
 </Directory>' >> /etc/apache2/conf.d/phpmyadmin.conf
-redtext "restart 244"
     service apache2 restart
 
 
