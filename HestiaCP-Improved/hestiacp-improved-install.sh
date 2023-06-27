@@ -70,9 +70,9 @@ check_result() {
 
 
 read -r -p "What e-mail address would you like to receive alerts to? " vEmail
-read -r -p "Which port do you want the panel can be accessed from? or press enter to use default: " vPort
+read -r -p "Which port do you want the panel can be accessed from? or press enter to use default (2083): " vPort
 read -r -p "Please type a password to use or press enter to generate it automatically: " vPassword
-read -r -p "Please type timezone of your server (example: Asia/Jakarta) or press enter to use default: " vTimezone
+read -r -p "Please type timezone of your server (example: Asia/Jakarta) or press enter to use server default: " vTimezone
 
 #hostname
 read -r -p "Do you want to use random fqdn as your server hostname? Its safer to use random fqdn so hacker can't search your server's ip via censys [y/N] " vRandomHostname
