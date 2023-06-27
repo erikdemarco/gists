@@ -827,10 +827,12 @@ sed -i -e "s/$word_to_find/$word_to_replace/g" ${XPANEL}web/js/pages/edit_web.js
 #restart nginx
 sudo systemctl restart nginx
 
-
+<<'###DEPRECATED'
 #----------------------------------------------------------#
 #      optimizing nginx (autoupdate cloudflare ips)        #
 #----------------------------------------------------------#
+
+#NOTE: implemented in hestia
 
 # Install cloudflare ips updater script
 curl -o ${XPANEL}bin/cloudflare-update-ip-ranges.sh https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/cloudflare-update-ip-ranges.sh
@@ -852,6 +854,7 @@ greentext "Added script to autoupdate cloudflare ips"
 
 #restart nginx
 sudo systemctl restart nginx
+###DEPRECATED
 
 #----------------------------------------------------------#
 #      		optimizing nginx (etc)        		   #
