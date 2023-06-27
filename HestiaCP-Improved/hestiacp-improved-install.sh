@@ -75,7 +75,7 @@ read -r -p "Please type a password to use or press enter to generate it automati
 read -r -p "Please type timezone of your server (example: Asia/Jakarta) or press enter to use server default: " vTimezone
 
 #hostname
-read -r -p "Do you want to use random fqdn as your server hostname? Default will use random fqdn so hacker can't search your server's ip via censys [y/N] " vRandomHostname
+read -r -p "Do you want to use random fqdn as your server hostname? 'yes' will use random fqdn so hacker can't search your server's ip via censys [y/N] " vRandomHostname
 if [ $vRandomHostname == "n" ] || [ $vRandomHostname == "N" ]; then
   read -r -p "Please type your server hostname, or press enter to use default: " vHostname
 else
@@ -1215,10 +1215,13 @@ mkdir -p "/backup"
 #disable auto-update, sometimes autoupdate crashing our site (dont try this if your panel is not protected), we need to do full update of cp every couple years to keep system crisp
 ${XPANEL}bin/v-delete-cron-hestia-autoupdate
 
-#remove file-manager, to minimize bug/security issue. you can still use sftp.
+#disable file-manager, to minimize bug/security issue. you can still use sftp.
 if [ -e "${XPANEL}web/fm" ]; then
     ${XPANEL}bin/v-delete-sys-filemanager
 fi
+
+#disable quick app installer
+v-change-sys-config-value 'PLUGIN_APP_INSTALLER' 'false'
 
 
 
