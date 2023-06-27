@@ -75,7 +75,7 @@ read -r -p "Please type a password to use or press enter to generate it automati
 read -r -p "Please type timezone of your server (example: Asia/Jakarta) or press enter to use server default: " vTimezone
 
 #hostname
-read -r -p "Do you want to use random fqdn as your server hostname? Its safer to use random fqdn so hacker can't search your server's ip via censys [y/N] " vRandomHostname
+read -r -p "Do you want to use random fqdn as your server hostname? Default will use random fqdn so hacker can't search your server's ip via censys [y/N] " vRandomHostname
 if [ $vRandomHostname == "n" ] || [ $vRandomHostname == "N" ]; then
   read -r -p "Please type your server hostname, or press enter to use default: " vHostname
 else
