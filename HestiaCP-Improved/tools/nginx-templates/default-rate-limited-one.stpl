@@ -6,7 +6,8 @@
 # Modified from: https://github.com/hestiacp/hestiacp/blob/main/install/deb/templates/web/nginx/default.stpl
 
 server {
-    listen      %ip%:%proxy_ssl_port% ssl http2;
+    listen      %ip%:%proxy_ssl_port% ssl;
+    http2 on;
     server_name %domain_idn% %alias_idn%;
     ssl_certificate      %ssl_pem%;
     ssl_certificate_key  %ssl_key%;
