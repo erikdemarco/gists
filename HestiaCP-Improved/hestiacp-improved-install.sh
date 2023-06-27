@@ -17,6 +17,11 @@ sudo apt-get update
 #                   functions                              #
 #----------------------------------------------------------#
 
+#silent apt install
+apt_silent_install() {
+    greentext "Installing $1 silently...";
+    sudo apt-get -y install $1 > /dev/null 2>&1
+}
 
 #text colors
 redtext() { echo "$(tput setaf 1)$*$(tput setaf 7)"; }
@@ -317,7 +322,7 @@ sudo systemctl restart apache2
 
 greentext "installing monit"
 
-sudo apt install monit
+apt_silent_install monit
 
 #allow only localhost to access
 echo 'set httpd port 2812
@@ -507,7 +512,7 @@ sudo systemctl restart apache2
 phpversion_short="$(php -r 'echo PHP_MAJOR_VERSION;').$(php -r 'echo PHP_MINOR_VERSION;')" #example:7.3
 
 #add bcmath
-sudo apt install php${phpversion_short}-bcmath
+apt_silent_install php${phpversion_short}-bcmath
 #addextension line to php.ini if its not yet activated automatically
 #sed -i -e '/extension=bz2/a extension=bcmath' /etc/php/${phpversion_short}/cli/php.ini		
 
@@ -520,12 +525,12 @@ done
 
 # php-redis
 # https://www.prowebtips.com/install-redis-and-php-redis-extension-on-ubuntu/
-sudo apt install -y php-redis	#is this needed?
-sudo apt install -y "php${phpversion_short}-redis"
+apt_silent_install php-redis	#is this needed?
+apt_silent_install "php${phpversion_short}-redis"
 
 
 #php soap
-sudo apt-get install php${phpversion_short}-soap
+apt_silent_install php${phpversion_short}-soap
 #addextension line to php.ini if its not yet activated automatically
 #sed -i -e '/extension=bz2/a extension=soap' /etc/php/${phpversion_short}/cli/php.ini		
 
@@ -952,7 +957,7 @@ fi
 if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
 
     #install redis (automatically make it accessable only from localhost)
-    sudo apt install -y redis-server
+    apt_silent_install redis-server
 
     #redis config: maxmemory-policy using lfu: https://redis.io/topics/lru-cache
     sed -i -e "s/^# maxmemory-policy .*/maxmemory-policy allkeys-lfu/" /etc/redis/redis.conf
@@ -986,7 +991,7 @@ if [ $vAddRedisServer == "y" ] || [ $vAddRedisServer == "Y" ]; then
     sysctl vm.overcommit_memory=1   #instant effect 
     echo 'vm.overcommit_memory = 1' >> /etc/sysctl.conf #persist after reboot
     echo madvise > /sys/kernel/mm/transparent_hugepage/enabled    #instant effect 
-    sudo apt install -y sysfsutils && echo 'kernel/mm/transparent_hugepage/enabled = madvise' >> /etc/sysfs.conf  #persist after reboot. we tried to use rc.local and crontab with no succes, maybe because redis start earlier than those. we use sysfs instead. https://askubuntu.com/questions/597372/how-do-i-modify-sys-kernel-mm-transparent-hugepage-enabled
+    apt_silent_install sysfsutils && echo 'kernel/mm/transparent_hugepage/enabled = madvise' >> /etc/sysfs.conf  #persist after reboot. we tried to use rc.local and crontab with no succes, maybe because redis start earlier than those. we use sysfs instead. https://askubuntu.com/questions/597372/how-do-i-modify-sys-kernel-mm-transparent-hugepage-enabled
 
     #restart redis
     sudo systemctl restart redis-server
@@ -1051,7 +1056,7 @@ if [ $vAddMaldet == "y" ] || [ $vAddMaldet == "Y" ]; then
     if [ $vMaldetMonitoring == "yes" ]; then
     
         #install inotify-tools
-	sudo apt install -y inotify-tools
+	apt_silent_install inotify-tools
 	
 	#start monitoring /home
 	/usr/local/maldetect/maldet --monitor /home
