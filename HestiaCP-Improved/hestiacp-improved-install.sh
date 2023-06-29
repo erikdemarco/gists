@@ -327,8 +327,9 @@ sudo systemctl restart apache2
 
 greentext "installing monit"
 
-sudo apt install monit
+#using apt_silent_install sometimes causes app not successfully installed because of 'Waiting for cache lock' error
 #apt_silent_install monit
+sudo apt install monit
 
 #allow only localhost to access
 echo 'set httpd port 2812
