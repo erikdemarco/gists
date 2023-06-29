@@ -327,7 +327,8 @@ sudo systemctl restart apache2
 
 greentext "installing monit"
 
-apt_silent_install monit
+#apt_silent_install monit
+sudo apt install monit
 
 #allow only localhost to access
 echo 'set httpd port 2812
