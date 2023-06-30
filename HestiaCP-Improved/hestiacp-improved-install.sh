@@ -17,16 +17,16 @@ sudo apt-get update
 #                   functions                              #
 #----------------------------------------------------------#
 
-#silent apt install
-apt_silent_install() {
-    greentext "Installing $1 silently...";
-    sudo apt-get -y install $1 > /dev/null 2>&1
-}
-
 #text colors
 redtext() { echo "$(tput setaf 1)$*$(tput setaf 7)"; }
 greentext() { echo "$(tput setaf 2)$*$(tput setaf 7)"; }
 yellowtext() { echo "$(tput setaf 3)$*$(tput setaf 7)"; }
+
+#silent apt install
+apt_silent_install() {
+    greentext "Installing $1 silently...";
+    sudo apt-get -y install $1 > /dev/null 2>&1 || redtext "Installation of $1 failed" && greentext "Installation of $1 success"
+}
 
 #to round float
 round() { echo $1 | awk '{print int($1+0.5)}'; }
