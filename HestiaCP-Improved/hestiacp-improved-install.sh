@@ -23,6 +23,7 @@ greentext() { echo "$(tput setaf 2)$*$(tput setaf 7)"; }
 yellowtext() { echo "$(tput setaf 3)$*$(tput setaf 7)"; }
 
 #silent apt install
+# check result of apt install: https://askubuntu.com/a/436918
 apt_silent_install() {
     greentext "Installing $1 silently...";
     sudo apt-get -y install $1 > /dev/null 2>&1 || redtext "Installation of $1 failed" && greentext "Installation of $1 success"
