@@ -53,4 +53,4 @@ class shutdown:
         app.stop()
 
 if __name__ == "__main__":
-    app.run()
+    server = web.httpserver.runsimple(app.wsgifunc(), ("127.0.0.1", 5001))
