@@ -55,12 +55,10 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             # Shut down the server
             threading.Thread(target=self.server.shutdown).start()
             #threading.Thread(target=self.server.shutdown, daemon=True).start()
-
-
         else:
-            self.send_response(404)
+            self.send_response(200) #we must always return 200, so monit will know its up, we cant use 404 because monit will treat it as fail
             self.end_headers()
-            self.wfile.write(b'Not Found')
+            self.wfile.write(b'Hello')
 
     def do_POST(self):
         # Get the length of the data
