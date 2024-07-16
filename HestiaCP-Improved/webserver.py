@@ -33,11 +33,11 @@ PORT = 5001
 
 class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
 
-    def run_script(self, file_path, args=None):
-        if not os.path.exists(file_path):
-            return f"Error: The file '{file_path}' does not exist."
-        #command = ['python3', file_path]
-        command = ['sudo', '-u', 'restrictedpy', 'python3', filepath]
+    def run_script(self, filepath, args=None):
+        if not os.path.exists(filepath):
+            return f"Error: The file '{filepath}' does not exist."
+        #command = ['/usr/bin/python3', filepath]
+        command = ['sudo', '-u', 'restrictedpy', '/usr/bin/python3', filepath] #by now we should already run this script in non-root, but we keep enforcing it just to make sure
         if args:
             # Ensure each argument is properly quoted using shlex.quote()
             command.extend(shlex.quote(arg) for arg in args)
@@ -54,9 +54,14 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(b'Server shutting down...')
             
+            def shutdown_server(server):
+                server.shutdown()
+                server.server_close()  # This will close the socket
+
             # Shut down the server
             #threading.Thread(target=self.server.shutdown).start()
-            threading.Thread(target=self.server.shutdown, daemon=True).start()
+            #threading.Thread(target=shutdown_server, args=(self.server,)).start()
+            threading.Thread(target=shutdown_server, args=(self.server,), daemon=True).start()
         else:
             self.send_response(200) #we must always return 200, so monit will know its up, we cant use 404 because monit will treat it as fail
             self.send_header('Content-type', 'text/plain')
@@ -93,8 +98,22 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         self.wfile.write(json.dumps(response).encode('utf-8'))
 
 
-
+"""
 with socketserver.TCPServer((IP, PORT), SimpleHTTPRequestHandler, bind_and_activate=False) as httpd:
+
+    #to fix: [Errno 98] Address already in use" in this script, doesnt work. https://gist.github.com/andreif/10dff6a3dedb0206f35f92f626894134
+    httpd.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    httpd.server_bind()
+    httpd.server_activate()
+
+    print(f"Serving on port {PORT}")
+    server_thread = threading.Thread(target=httpd.serve_forever, daemon=True)
+    server_thread.start()
+    server_thread.join()
+    #httpd.serve_forever()
+"""
+
+with socketserver.ThreadingTCPServer((IP, PORT), SimpleHTTPRequestHandler, bind_and_activate=False) as httpd:
 
     #to fix: [Errno 98] Address already in use" in this script, doesnt work. https://gist.github.com/andreif/10dff6a3dedb0206f35f92f626894134
     httpd.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
