@@ -1,4 +1,3 @@
-
 import web
 import json
 import subprocess
@@ -11,10 +10,12 @@ urls = (
 
 app = web.application(urls, globals())
 
+
 def run_script(filepath, args=None):
     if not os.path.exists(filepath):
         return f"Error: The file '{filepath}' does not exist."
-    command = ['python3', filepath]
+    #command = ['su', 'restrictedpy', '-c', 'python3', filepath]
+    command = ['sudo', '-u', 'restrictedpy', 'python3', filepath]
     if args:
         # Ensure each argument is properly quoted using shlex.quote()
         command.extend(shlex.quote(arg) for arg in args)
@@ -54,3 +55,4 @@ class shutdown:
 
 if __name__ == "__main__":
     server = web.httpserver.runsimple(app.wsgifunc(), ("127.0.0.1", 5001))
+    #app.run() #to run via custom socket use: /usr/bin/python3 /usr/local/bin/webpy.py 127.0.0.1:5001
