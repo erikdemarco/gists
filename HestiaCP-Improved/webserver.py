@@ -25,7 +25,7 @@ import json
 import subprocess
 import os
 import threading
-#import socket
+import socket
 
 IP = "127.0.0.1"
 #PORT = 8080
@@ -36,7 +36,8 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     def run_script(self, file_path, args=None):
         if not os.path.exists(file_path):
             return f"Error: The file '{file_path}' does not exist."
-        command = ['python3', file_path]
+        #command = ['python3', file_path]
+        command = ['sudo', '-u', 'restrictedpy', 'python3', filepath]
         if args:
             # Ensure each argument is properly quoted using shlex.quote()
             command.extend(shlex.quote(arg) for arg in args)
@@ -49,14 +50,16 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path == '/shutdown':
             self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
             self.end_headers()
             self.wfile.write(b'Server shutting down...')
             
             # Shut down the server
-            threading.Thread(target=self.server.shutdown).start()
-            #threading.Thread(target=self.server.shutdown, daemon=True).start()
+            #threading.Thread(target=self.server.shutdown).start()
+            threading.Thread(target=self.server.shutdown, daemon=True).start()
         else:
             self.send_response(200) #we must always return 200, so monit will know its up, we cant use 404 because monit will treat it as fail
+            self.send_header('Content-type', 'text/plain')
             self.end_headers()
             self.wfile.write(b'Hello')
 
@@ -89,7 +92,14 @@ class SimpleHTTPRequestHandler(http.server.BaseHTTPRequestHandler):
         # Send the JSON response
         self.wfile.write(json.dumps(response).encode('utf-8'))
 
-with socketserver.TCPServer((IP, PORT), SimpleHTTPRequestHandler) as httpd:
-    #httpd.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) #to fix: [Errno 98] Address already in use" in this script, doesnt work
+
+
+with socketserver.TCPServer((IP, PORT), SimpleHTTPRequestHandler, bind_and_activate=False) as httpd:
+
+    #to fix: [Errno 98] Address already in use" in this script, doesnt work. https://gist.github.com/andreif/10dff6a3dedb0206f35f92f626894134
+    httpd.socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    httpd.server_bind()
+    httpd.server_activate()
+
     print(f"Serving on port {PORT}")
     httpd.serve_forever()
