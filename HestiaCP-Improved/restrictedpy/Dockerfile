@@ -8,7 +8,7 @@ WORKDIR /home/$USER
 #Download app & move it to workdir inside docker
 ADD --chmod=755 https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/restrictedpy/app.py .
 
-RUN pip install flask yfinance[nospam]
+RUN pip install flask yfinance[nospam,repair]
 
 # Bundle app source
 COPY . .
