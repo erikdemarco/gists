@@ -4,18 +4,6 @@ curl -X POST -H "Content-Type: application/json" -d @- http://127.0.0.1:5001 << 
 {"code": "print(f\"Arguments: {args['name']}\")", "args": {"name": "Alice"}}
 EOF
 
-php json generator:
-$code = <<<EOD
-import yfinance as yf
-msft = yf.Ticker('MSFT')
-msft.info
-EOD;
-$data = [];
-$data['code'] = $code;
-$data['args'] = ['name' => 'Alice'];
-$encoded = json_encode($data);
-print( $encoded );
-
 """
 
 import json
