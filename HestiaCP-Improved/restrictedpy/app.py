@@ -29,29 +29,27 @@ app = Flask(__name__)
 
 
 def execute_code(code_snippet, args={}):
-    """
-    Executes a Python code snippet with the provided arguments and returns the output as a string.
-    
-    Args:
-        code_snippet (str): The Python code to be executed.
-        args (dict, optional): A dictionary of arguments to be used in the code snippet. Defaults to {}.
-        
-    Returns:
-        str: The output of the executed code.
-    """
-    # Create a buffer to capture the output
+
+    def get_restricted_globals():
+        restricted_functions = ['exec', 'eval']
+        restricted_modules = ['os', 'subprocess']
+        restricted_globals = {
+            '__builtins__': {k: v for k, v in globals().items() if k not in restricted_functions},
+            '__name__': '__main__',
+        }
+        def restricted_import(name, globals=None, locals=None, fromlist=(), level=0):
+            if name in restricted_modules:
+                raise ImportError(f"Importing '{name}' is not allowed")
+            return __import__(name, globals, locals, fromlist, level)
+        restricted_globals['__builtins__']['__import__'] = restricted_import
+        return restricted_globals
+
     buffer = io.StringIO()
-    
-    # Redirect stdout to the buffer
     with contextlib.redirect_stdout(buffer):
         try:
-            # Execute the code snippet with the provided arguments
-            exec(code_snippet, globals(), {'args': args})
+            exec(code_snippet, get_restricted_globals(), {'args': args})
         except Exception as e:
-            # If an exception occurs, print the error message to the buffer
             buffer.write(str(e))
-    
-    # Get the output from the buffer and return it as a string
     return buffer.getvalue().strip()
 
 
