@@ -12,9 +12,28 @@ import signal
 from flask import Flask, request, jsonify
 import io
 import contextlib
-import signal
+import multiprocessing
+import builtins
 
 app = Flask(__name__)
+
+
+def execute_code_with_timeout(code, args={}, timeout=30):
+    result_queue = multiprocessing.Queue()
+    def target():
+        result = execute_code(code, args)
+        result_queue.put(result)
+    process = multiprocessing.Process(target=target)
+    process.start()
+    process.join(timeout)
+    if process.is_alive():
+        process.terminate()
+        process.join()  # Ensure process termination
+        raise TimeoutError(f"Code execution exceeded the {timeout}-second time limit.")
+    if not result_queue.empty():
+        return result_queue.get()
+    else:
+        return "No result returned."
 
 
 def execute_code(code_snippet, args={}):
@@ -22,15 +41,20 @@ def execute_code(code_snippet, args={}):
     def get_restricted_globals():
         restricted_functions = ['exec', 'eval']
         restricted_modules = ['os', 'subprocess']
-        restricted_globals = {
-            '__builtins__': {k: getattr(globals()['__builtins__'], k) for k in dir(globals()['__builtins__']) if k not in restricted_functions},
-            '__name__': '__main__',
-        }
+        restricted_globals = {}
+        for name in dir(__builtins__):
+            if name not in restricted_functions and not name.startswith('__'):
+                restricted_globals[name] = getattr(__builtins__, name)
         def restricted_import(name, globals=None, locals=None, fromlist=(), level=0):
             if name in restricted_modules:
                 raise ImportError(f"Importing '{name}' is not allowed")
-            return globals()['__builtins__']['__import__'](name, globals, locals, fromlist, level)
+            return __import__(name, globals, locals, fromlist, level)
+        restricted_globals['__builtins__'] = {
+            name: getattr(__builtins__, name) for name in dir(__builtins__)
+            if name not in restricted_functions
+        }
         restricted_globals['__builtins__']['__import__'] = restricted_import
+        return restricted_globals
 
     buffer = io.StringIO()
     with contextlib.redirect_stdout(buffer):
@@ -45,13 +69,6 @@ def execute_code(code_snippet, args={}):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-
-    #timeout
-    def signal_handler(signum, frame):
-        raise Exception("Timed out!")
-    signal.signal(signal.SIGALRM, signal_handler)
-    signal.alarm(30)
-
     if request.method == 'GET':
         return "Ok"
     elif request.method == 'POST':
@@ -59,7 +76,7 @@ def index():
             data = request.get_json()
             code = data.get('code', "")
             args = data.get('args', {})
-            result = execute_code(code, args)
+            result = execute_code_with_timeout(code, args)
         except json.JSONDecodeError:
             result = "Error: Invalid JSON"
         except Exception as e:
