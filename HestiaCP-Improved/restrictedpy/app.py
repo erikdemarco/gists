@@ -34,15 +34,14 @@ def execute_code(code_snippet, args={}):
         restricted_functions = ['exec', 'eval']
         restricted_modules = ['os', 'subprocess']
         restricted_globals = {
-            '__builtins__': {k: v for k, v in globals().items() if k not in restricted_functions},
+            '__builtins__': {k: getattr(globals()['__builtins__'], k) for k in dir(globals()['__builtins__']) if k not in restricted_functions},
             '__name__': '__main__',
         }
         def restricted_import(name, globals=None, locals=None, fromlist=(), level=0):
             if name in restricted_modules:
                 raise ImportError(f"Importing '{name}' is not allowed")
-            return __import__(name, globals, locals, fromlist, level)
+            return globals()['__builtins__']['__import__'](name, globals, locals, fromlist, level)
         restricted_globals['__builtins__']['__import__'] = restricted_import
-        return restricted_globals
 
     buffer = io.StringIO()
     with contextlib.redirect_stdout(buffer):
