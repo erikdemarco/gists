@@ -12,6 +12,7 @@ import signal
 from flask import Flask, request, jsonify
 import io
 import contextlib
+import signal
 
 app = Flask(__name__)
 
@@ -44,6 +45,13 @@ def execute_code(code_snippet, args={}):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
+
+    #timeout
+    def signal_handler(signum, frame):
+        raise Exception("Timed out!")
+    signal.signal(signal.SIGALRM, signal_handler)
+    signal.alarm(30)
+
     if request.method == 'GET':
         return "Ok"
     elif request.method == 'POST':
