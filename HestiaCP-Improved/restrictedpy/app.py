@@ -6,10 +6,9 @@ EOF
 
 """
 
-import json
 import os
 import signal
-from flask import Flask, request, jsonify
+from flask import Flask, request
 import io
 import contextlib
 import multiprocessing
@@ -73,17 +72,14 @@ def index():
         return "Ok"
     elif request.method == 'POST':
         try:
-            data = request.get_json()
+            data = request.form
             code = data.get('code', "")
             args = data.get('args', {})
             result = execute_code_with_timeout(code, args)
-        except json.JSONDecodeError:
-            result = "Error: Invalid JSON"
         except Exception as e:
             result = str(e)
 
         # construct response
-        #response = { "result": str(result) }; response = jsonify(response)
         response = str(result)
         
         return response
