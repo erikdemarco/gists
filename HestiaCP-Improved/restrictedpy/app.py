@@ -83,11 +83,11 @@ def index():
             result = str(e)
 
         # construct response
-        response = {
-            "result": str(result)
-        }
+        #response = { "result": str(result) }; response = jsonify(response)
+        response = str(result)
+        
+        return response
 
-        return jsonify(response)
 
 @app.route('/shutdown', methods=['GET'])
 def shutdown():
