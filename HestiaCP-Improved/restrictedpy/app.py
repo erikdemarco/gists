@@ -72,10 +72,12 @@ def index():
         return "Ok"
     elif request.method == 'POST':
         try:
-            data = request.form
+            data = request.get_json()
             code = data.get('code', "")
             args = data.get('args', {})
             result = execute_code_with_timeout(code, args)
+        except json.JSONDecodeError:
+            result = "Error: Invalid JSON"
         except Exception as e:
             result = str(e)
 
