@@ -2,7 +2,10 @@ FROM python:3.12-slim
 
 ENV USER=container
 
-# Create app directory
+# Create non-root user
+RUN adduser --shell=/usr/sbin/nologin --disabled-password --gecos "" $USER && usermod -G $USER $USER
+
+# Change work directory
 WORKDIR /home/$USER
 
 #Download app & move it to workdir inside docker
@@ -15,8 +18,7 @@ COPY . .
 
 EXPOSE 5001
 
-# Create non-root user
-RUN adduser --shell=/usr/sbin/nologin --disabled-password --gecos "" $USER && usermod -G $USER $USER
+# Run as user
 USER $USER
 
 CMD ["python3", "-I", "app.py"]
