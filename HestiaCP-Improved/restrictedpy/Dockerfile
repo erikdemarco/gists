@@ -1,9 +1,9 @@
-FROM python:3.12-slim
+FROM python:3.12-alpine
 
 ENV USER=container
 
 # Create non-root user
-RUN adduser --shell=/usr/sbin/nologin --disabled-password --gecos "" $USER && usermod -G $USER $USER
+RUN adduser --shell=/usr/sbin/nologin --disabled-password --gecos "" $USER
 
 # Change work directory
 WORKDIR /home/$USER
