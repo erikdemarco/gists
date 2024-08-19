@@ -80,5 +80,4 @@ const handler = async (request: Request): Promise<Response> => {
   }
 };
 
-const port = 8080;
-Deno.serve({ port: 3000, hostname: "0.0.0.0" }, handler);
+Deno.serve({ port: 5002, hostname: "0.0.0.0" }, handler);
