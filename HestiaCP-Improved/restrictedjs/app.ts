@@ -65,11 +65,10 @@ const handler = async (request: Request): Promise<Response> => {
       const code = body.code ?? "";
       const args = body.args ?? {};
       const result = await exec_with_timeout(code, args, 30000);
-      const jsonResponse = { message: "success", data: result };
 
-      return new Response(JSON.stringify(jsonResponse), {
+      return new Response(result), {
         status: 200,
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain" },
       });
 
     } catch (error) {
