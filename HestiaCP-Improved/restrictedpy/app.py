@@ -6,36 +6,13 @@ EOF
 
 """
 
-import os
-import signal
-from flask import Flask, request
-import io
-import contextlib
+from http.server import HTTPServer, BaseHTTPRequestHandler
+import json
 import multiprocessing
-import builtins
+import sys
+import io
 
-app = Flask(__name__)
-
-
-def execute_code_with_timeout(code, args={}, timeout=30):
-    result_queue = multiprocessing.Queue()
-    def target():
-        result = execute_code(code, args)
-        result_queue.put(result)
-    process = multiprocessing.Process(target=target)
-    process.start()
-    process.join(timeout)
-    if process.is_alive():
-        process.terminate()
-        process.join()  # Ensure process termination
-        raise TimeoutError(f"Code execution exceeded the {timeout}-second time limit.")
-    if not result_queue.empty():
-        return result_queue.get()
-    else:
-        return "No result returned."
-
-
-def execute_code(code_snippet, args={}):
+def execute_code_with_timeout(code="", args={}, timeout=30):
 
     def get_restricted_globals():
         restricted_functions = ['exec', 'eval']
@@ -55,44 +32,80 @@ def execute_code(code_snippet, args={}):
         restricted_globals['__builtins__']['__import__'] = restricted_import
         return restricted_globals
 
-    buffer = io.StringIO()
-    with contextlib.redirect_stdout(buffer):
+    def target_func(code, args, output_queue):
         try:
-            exec(code_snippet, get_restricted_globals(), {'args': args})
+
+            # Redirect stdout to capture print statements
+            output = io.StringIO()
+            sys.stdout = output
+
+            # Execute the code in a restricted global namespace, sys is required in exec
+            exec(code, get_restricted_globals(), {'args': args})
+
+            # Send the captured output to the queue
+            output_queue.put(output.getvalue())
         except Exception as e:
-            buffer.write(str(e))
-    return buffer.getvalue().strip()
+            output_queue.put(f"Error: {e}")
+        finally:
+            sys.stdout = sys.__stdout__  # Restore stdout
+
+    # Create a Queue to capture output
+    output_queue = multiprocessing.Queue()
+
+    # Create a new process to run the target function
+    process = multiprocessing.Process(target=target_func, args=(code, args, output_queue))
+
+    # Start the process
+    process.start()
+
+    # Wait for the process to finish, with a timeout
+    process.join(timeout)
+
+    # Terminate the process if it's still running
+    if process.is_alive():
+        process.terminate()
+        process.join()
+        return "" #Timeout reached
+
+    # Get the output from the Queue
+    if not output_queue.empty():
+        result = output_queue.get().strip()  # Strip trailing newlines
+    else:
+        result = ""
+
+    return result
 
 
 
+class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
 
-@app.route('/', methods=['GET', 'POST'])
-def index():
-    if request.method == 'GET':
-        return "Ok"
-    elif request.method == 'POST':
-        try:
-            data = request.get_json()
-            code = data.get('code', "")
-            args = data.get('args', {})
-            result = execute_code_with_timeout(code, args)
-        except json.JSONDecodeError:
-            result = "Error: Invalid JSON"
-        except Exception as e:
-            result = str(e)
-
-        # construct response
-        response = str(result)
+    def do_POST(self):
+        # Get the content length to read the data
+        content_length = int(self.headers['Content-Length'])
+        # Read the posted data
+        post_data = self.rfile.read(content_length)
         
-        return response
+        # Parse the JSON data
+        try:
+            json_data = json.loads(post_data)
+            code = json_data.get('code', "")
+            args = json_data.get('args', {})
+            result = execute_code_with_timeout(code, args)
 
+            self.send_response(200)
+            self.send_header('Content-type', 'text/plain')
+            self.end_headers()
+            self.wfile.write(result.encode('utf-8'))
 
-@app.route('/shutdown', methods=['GET'])
-def shutdown():
-    print("Shutting down server...")
-    os.kill(os.getpid(), signal.SIGTERM)
-    return "Server is shutting down..."
+        except json.JSONDecodeError:
+            self.send_response(400)
+            self.end_headers()
+            self.wfile.write(b'Invalid JSON data.')
 
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001, debug=False, use_debugger=False, use_reloader=False) #docker
-    #app.run(host="127.0.0.1", port=5001, debug=False, use_debugger=False, use_reloader=False) #standalone
+    #turn off logging
+    def log_message(self, format, *args):
+        return
+
+httpd = HTTPServer(('0.0.0.0', 5001), SimpleHTTPRequestHandler) #docker
+#httpd = HTTPServer(('127.0.0.1', 5001), SimpleHTTPRequestHandler) #standalone
+httpd.serve_forever()
