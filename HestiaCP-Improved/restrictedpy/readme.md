@@ -1,3 +1,4 @@
+```
 #install docker. https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
 sudo apt-get update
 sudo apt-get install ca-certificates curl
@@ -15,3 +16,4 @@ sudo apt-get -y install docker-ce docker-ce-cli containerd.io docker-buildx-plug
 curl -O https://raw.githubusercontent.com/erikdemarco/gists/main/HestiaCP-Improved/restrictedpy/install.sh
 chmod +x install.sh
 ./install.sh && rm install.sh
+```
